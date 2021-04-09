@@ -50,6 +50,35 @@ TravelTimeList[22] = {from_region: 4, To_region: 2, min: 120}
 TravelTimeList[23] = {from_region: 4, To_region: 3, min: 320}
 TravelTimeList[24] = {from_region: 4, To_region: 4, min: 0}
 
+// The main function that validates the data
+function validatePatientData(PatientList) {
+  for(index in PatientList) {
+      try {
+          if(nameValidation(PatientList[index].Name) == false) throw "Patient name";
+          if(gradingValidation(PatientList[index].grading) == false) throw "Patient grading";
+          if(regionValidation(PatientList[index].region) == false) throw "Patient region";
+      }
+      catch(err) {
+          console.log("Problem with patientlist[" + index +"] data, specifically " + err);
+      }
+  }
+}
+
+
+function nameValidation(Name) {
+  return isNaN(Name);
+}
+
+function gradingValidation(grading) {
+  return (grading === 0 || grading === 1 || grading === 2);
+}
+
+function regionValidation(region) {
+  return (region === 0 || region === 1 || region === 2 || region === 3 || region === 4);
+}
+
+validatePatientData(PatientList);
+
 function crowdedness(admitted, beds){
     percentile_crowd = admitted/beds;
     if (percentile_crowd >= 0.85)
