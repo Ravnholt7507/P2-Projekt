@@ -36,7 +36,6 @@ function regionOnePatients(arrayOfCities){
          placeholder = regionCities[index].length
    }
 
-
    for(index in arrayOfCities){
        for(i = 0; i < placeholder; i++){
             if(regionCities[0][i] == arrayOfCities[index]){
@@ -65,8 +64,7 @@ function regionOnePatients(arrayOfCities){
                inventory[4] += 1;
             }
           }
-       }
-   }   
+    }
    return inventory;
 }
 
@@ -108,47 +106,47 @@ function regionGradingsInTotal(gradeArr){
           // One = north jutland, Two = mid jutland until five = capital.
          
           for(index in regionArr[0]){
-            if(regionArr[0][index] === 0)
+            if(regionArr[0][index] == 0)
                 regionOneGradings[0] += 1;
-            else if(regionArr[0][index] === 1)
+            else if(regionArr[0][index] == 1)
                 regionOneGradings[1] += 1;
-            else
+            else if (regionOneArr[index] == 2)
                 regionOneGradings[2] += 1;
           }
 
           for(index in regionTwoArr){
-            if(regionTwoArr[index] === 0)
+            if(regionTwoArr[index] == 0)
                 regionTwoGradings[0] += 1;
-            else if(regionTwoArr[index] === 1)
+            else if(regionTwoArr[index] == 1)
                 regionTwoGradings[1] += 1;
-            else
+            else if (regionTwoArr[index] == 2)
                 regionTwoGradings[2] += 1;
           }
 
           for(index in regionThreeArr){
-            if(regionThreeArr[index] === 0)
+            if(regionThreeArr[index] == 0)
                 regionThreeGradings[0] += 1;
-            else if(regionThreeArr[index] === 1)
+            else if(regionThreeArr[index] == 1)
                 regionThreeGradings[1] += 1;
-            else
+            else if (regionThreeArr[index] == 2)
                 regionThreeGradings[2] += 1;
           }
 
           for(index in regionFourArr){
-            if(regionFourArr[index] === 0)
+            if(regionFourArr[index] == 0)
                 regionFourGradings[0] += 1;
-            else if(regionFourArr[index] === 1)
+            else if(regionFourArr[index] == 1)
                 regionFourGradings[1] += 1;
-            else
+            else if (regionFourArr[index] == 2)
                 regionFourGradings[2] += 1;
           }
 
           for(index in regionFiveArr){
-            if(regionFiveArr[index] === 0)
+            if(regionFiveArr[index] == 0)
                 regionFiveGradings[0] += 1;
-            else if(regionFiveArr[index] === 1)
+            else if(regionFiveArr[index] == 1)
                 regionFiveGradings[1] += 1;
-            else
+            else if (regionFiveArr[index] == 2)
                 regionFiveGradings[2] += 1;
           }
 
