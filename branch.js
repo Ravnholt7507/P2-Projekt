@@ -23,7 +23,7 @@ regionCities[4] = ['koebenhavn', 'albertslund', 'alleroed', 'ballerup', 'bornhol
 
 // this function needs to divide the patient's cities into a group of 5 (since 5 regions) so we can create a distance constraint
 // if grading level > 0, emergency, relocate person to nearest hospital, if grading level == 0, don't register them, send them home via homeAllocation 
-function regionOnePatients(arrayOfCities){
+function regionPatients(arrayOfCities){
    // resets regioninventory (from region 1)
    let inventory = [];
    let i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, p;
@@ -63,13 +63,10 @@ function regionOnePatients(arrayOfCities){
                n++;
                inventory[4] += 1;
             }
-          }
+        }
     }
    return inventory;
 }
-
-
-
 
 // testing
 // let test = regionInventoryTotal(CityArr);
@@ -84,10 +81,8 @@ let regionObj = {
    regionFivesPatients
 }
 
-
 // ---- creating the code for grading levels now, this purely takes in immediate patients to be admitted. 
 //------------------------------------
-
 // validate the different grading levels (1 == immediate care, needs to be admitted )
 function gradingEval(gradingArray,startElem,EndElement){
    // calling .splice method to partition the arrays into five halves and return it into another array with different values in the 0-4 positions.
@@ -96,60 +91,27 @@ function gradingEval(gradingArray,startElem,EndElement){
 
 // returns an array indiced from 0-4, holding in each array index an amount of patients to be admitted 
 function regionGradingsInTotal(gradeArr){
-          let regionOneGradings = [];
-          let regionTwoGradings = [];
-          let regionThreeGradings = [];
-          let regionFourGradings = [];
-          let regionFiveGradings = [];
-          let regionsTotal = [0,0,0,0,0];
-          // below inserts the amount of grading "1" patients into the different regions (
-          // One = north jutland, Two = mid jutland until five = capital.
+    let regionGradings = [0,0,0,0,0]
+    regionGradings[0] = {grade0: 0, grade1:0, grade2: 0}
+    regionGradings[1] = {grade0: 0, grade1:0, grade2: 0}
+    regionGradings[2] = {grade0: 0, grade1:0, grade2: 0}
+    regionGradings[3] = {grade0: 0, grade1:0, grade2: 0}
+    regionGradings[4] = {grade0: 0, grade1:0, grade2: 0}
+
+    let regionsTotal = [0,0,0,0,0];
+    // below inserts the amount of grading "1" patients into the different regions (
+    // One = north jutland, Two = mid jutland until five = capital.
          
-          for(index in regionArr[0]){
-            if(regionArr[0][index] == 0)
-                regionOneGradings[0] += 1;
-            else if(regionArr[0][index] == 1)
-                regionOneGradings[1] += 1;
-            else if (regionOneArr[index] == 2)
-                regionOneGradings[2] += 1;
+    for (let i = 0; i<5; i++)  
+        for(index in regionArr[i]){
+            if(regionArr[i][index] == 0)
+              regionGradings[i].grade0 += 1;
+            else if(regionArr[i][index] == 1)
+              regionGradings[i].grade1 += 1;
+            else if (regionArr[i][index] == 2)
+              regionGradings[i].grade3 += 1;
           }
-
-          for(index in regionTwoArr){
-            if(regionTwoArr[index] == 0)
-                regionTwoGradings[0] += 1;
-            else if(regionTwoArr[index] == 1)
-                regionTwoGradings[1] += 1;
-            else if (regionTwoArr[index] == 2)
-                regionTwoGradings[2] += 1;
-          }
-
-          for(index in regionThreeArr){
-            if(regionThreeArr[index] == 0)
-                regionThreeGradings[0] += 1;
-            else if(regionThreeArr[index] == 1)
-                regionThreeGradings[1] += 1;
-            else if (regionThreeArr[index] == 2)
-                regionThreeGradings[2] += 1;
-          }
-
-          for(index in regionFourArr){
-            if(regionFourArr[index] == 0)
-                regionFourGradings[0] += 1;
-            else if(regionFourArr[index] == 1)
-                regionFourGradings[1] += 1;
-            else if (regionFourArr[index] == 2)
-                regionFourGradings[2] += 1;
-          }
-
-          for(index in regionFiveArr){
-            if(regionFiveArr[index] == 0)
-                regionFiveGradings[0] += 1;
-            else if(regionFiveArr[index] == 1)
-                regionFiveGradings[1] += 1;
-            else if (regionFiveArr[index] == 2)
-                regionFiveGradings[2] += 1;
-          }
-
+         
          // inserting into the correct array spots in our region total array. 
 
          regionsTotal[0] = regionOneArr.length; 
