@@ -52,29 +52,42 @@ TravelTimeList[24] = {from_region: 4, To_region: 4, min: 0}
 
 // The main function that validates the data
 function validatePatientData(PatientList) {
-  for(index in PatientList) {
-      try {
-          if(nameValidation(PatientList[index].Name) == false) throw "Patient name";
-          if(gradingValidation(PatientList[index].grading) == false) throw "Patient grading";
-          if(regionValidation(PatientList[index].region) == false) throw "Patient region";
-      }
-      catch(err) {
-          console.log("Problem with patientlist[" + index +"] data, specifically " + err);
-      }
+    let DataErrorArr = [];
+    for(index in PatientList) {
+        try {
+            if(nameValidation(PatientList[index].Name) == false) throw "Patient name";
+            if(gradingValidation(PatientList[index].grading) == false) throw "Patient grading";
+            if(regionValidation(PatientList[index].region) == false) throw "Patient region";
+        }
+        catch(err) {
+          let problem = 'Problem with patientlist[' + index + '] data, specifically ' + err;
+          console.error(problem);
+          DataErrorArr.unshift(index); // unshift adds element to the front of array
+          fs.appendFile('./Error.txt', problem + "\n", err => {
+            if(err) console.error("Error writing to Error.txt");
+          });
+        }
+    }
+    console.log(DataErrorArr); // test
+    DeleteFaultyPatientData(DataErrorArr);
   }
-}
-
 
 function nameValidation(Name) {
-  return isNaN(Name);
+    return isNaN(Name);
 }
 
 function gradingValidation(grading) {
-  return (grading === 0 || grading === 1 || grading === 2);
+    return (grading === 0 || grading === 1 || grading === 2);
 }
 
 function regionValidation(region) {
-  return (region === 0 || region === 1 || region === 2 || region === 3 || region === 4);
+    return (region === 0 || region === 1 || region === 2 || region === 3 || region === 4);
+}
+
+function DeleteFaultyPatientData(arr) {
+    for(index in arr) {
+      PatientList.splice(arr[index], 1);
+    }
 }
 
 validatePatientData(PatientList);
