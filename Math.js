@@ -8,7 +8,7 @@ let travel_time5 = [0, 60, 180, 215, 280];
 
 function crowdedness(admitted, beds){
     percentile_crowd = admitted/beds;
-    if (percentile_crowd >= 0.85)
+    if (percentile_crowd >= 0.60)
         return 0;
     else
         return 1;
