@@ -19,7 +19,7 @@ regionCities[0] = ['Brønderslev','Frederikshavn','Hjørring','Jammerbugt','Læs
 regionCities[1] = ['Favrskov','Hedensted','Herning','Holstebro','Horsens','Ikast','Lemvig','Norddjurs','Odder','Randers','Ringkøbing-Skjern','Samsø','Silkeborg','Skanderborg','Skive','Struer','Syddjurs','Viborg','Aarhus'];
 regionCities[2] = ['Assens','Billund','Esbjerg','Fanø','Fredericia','Faaborg-Midtfyn','Haderslev','Kerteminde','Kolding','Langeland','Middelfart','Nordfyns','Nyborg','Odense','Svendborg','Sønderborg','Tønder','Varde','Vejen','Vejle','Ærø','Aabenraa'];
 regionCities[3] = ['Faxe', 'Greve', 'Guldborgsund', 'Holbæk', 'Kalundborg', 'Køge', 'Lejre', 'Lolland', 'Næstved', 'Odsherred', 'Ringsted', 'Roskilde', 'Slagelse', 'Solrød', 'Sorø', 'Stevns', 'Vordingborg'];
-regionCities[4] = ['Albertslund','Allerød','Ballerup','Bornholm','Brøndby','Københavns','Dragør','Egedal','Fredensborg','Frederiksberg','Frederikssund','Furesø','Gentofte','Gladsaxe','Glostrup','Gribskov','Halsnæs','Helsingør','Herlev','Hillerød','Hvidovre','Høje-Taastrup','Hørsholm','Ishøj','Lyngby-Taarbæk','Rudersdal','Rødovre','Tårnby','Vallensbæk'];
+regionCities[4] = ['Albertslund','Allerød','Ballerup','Bornholm','Brøndby','København','Dragør','Egedal','Fredensborg','Frederiksberg','Frederikssund','Furesø','Gentofte','Gladsaxe','Glostrup','Gribskov','Halsnæs','Helsingør','Herlev','Hillerød','Hvidovre','Høje-Taastrup','Hørsholm','Ishøj','Lyngby-Taarbæk','Rudersdal','Rødovre','Tårnby','Vallensbæk'];
 
 // this function needs to divide the patient's cities into a group of 5 (since 5 regions) so we can create a distance constraint
 // if grading level > 0, emergency, relocate person to nearest hospital, if grading level == 0, don't register them, send them home via homeAllocation 
@@ -65,10 +65,8 @@ function regionPatients(CityArr){
                inventory[4] += 1;
             }
         }
-    }
-   
-    console.log(regionArr[2])
-    console.log(regionArr[0])
+      }
+    console.log(inventory)
 
    return inventory;
 }

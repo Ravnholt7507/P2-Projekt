@@ -199,7 +199,7 @@ Kalundborg
 Gribskov
 Solrød
 Favrskov
-Københavns
+København
 Tårnby
 Vesthimmerland
 Ringkøbing-Skjern
@@ -294,7 +294,7 @@ Egedal
 Køge
 Høje-Taastrup
 Assens
-Københavns
+København
 Rebild
 Hørsholm
 Ærø
@@ -393,7 +393,7 @@ Læsø
 Lemvig
 Læsø
 Norddjurs
-Københavns
+København
 Ærø
 Høje-Taastrup
 Viborg
@@ -498,7 +498,7 @@ Middelfart
 Ærø
 Ærø
 Halsnæs
-Københavns
+København
 Horsens
 Slagelse
 Hvidovre
@@ -581,7 +581,7 @@ Varde
 Tårnby
 Viborg
 Ishøj
-Københavns
+København
 Holstebro
 Hedensted
 Struer
@@ -634,7 +634,7 @@ Hjørring
 Langeland
 Langeland
 Tårnby
-Københavns
+København
 Odsherred
 Thisted
 Randers
@@ -660,7 +660,7 @@ Lejre
 Frederikssund
 Fanø
 Rødovre
-Københavns
+København
 Halsnæs
 Frederikshavn
 Nordfyns
