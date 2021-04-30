@@ -1,13 +1,10 @@
+const { CityArr, NameArr, GradingArr } = require('./branch.js');
+const patientTables  = require('./branch.js');
+
 let percentile_crowd = 0;
 let percentile_medeqp = 0;
 
-let PatientList = [];
-PatientList[0] = {Name: "Jeff", grading: 1, region: 4}
-PatientList[1] = {Name: "Kebab", grading: 1, region: 2}
-PatientList[2] = {Name: "Smurf", grading: 1, region: 2}
-PatientList[3] = {Name: "Egon", grading: 1, region: 0}
-PatientList[4] = {Name: "Andre", grading: 1, region: 3}
-PatientList[5] = {Name: "Jeppe", grading: 1, region: 1}
+
 
 let HospitalList = [0,0,0,0,0];
 HospitalList[0] = {ID: 0, Region: 0, Navn: 'UniversetsHospital', Address: 'Example', Beds: 3000, admitted: 0, eqp: 300}
@@ -17,8 +14,8 @@ HospitalList[3] = {ID: 3, Region: 3, Navn: 'Sjalland Hospital', Address: 'Exampl
 HospitalList[4] = {ID: 4, Region: 4, Navn: 'Koebenhavn Hospital', Address: 'Example', Beds: 3000, admitted: 0, eqp: 300}
 
 let regionList = [0,0,0,0,0];
-regionList[0] = {number: 0, Name: 'Nord Jylland'}
-regionList[1] = {number: 1, Name: 'Midt Jylland'}
+regionList[0] = {number: 0, Name: 'Nordjylland'}
+regionList[1] = {number: 1, Name: 'Midtjylland'}
 regionList[2] = {number: 2, Name: 'Odense'}
 regionList[3] = {number: 3, Name: 'Sjalland'}
 regionList[4] = {number: 4, Name: 'Koebenhavn'}
@@ -51,13 +48,13 @@ TravelTimeList[23] = {from_region: 4, To_region: 3, min: 320}
 TravelTimeList[24] = {from_region: 4, To_region: 4, min: 0}
 
 // The main function that validates the data
-function validatePatientData(PatientList) {
+function validatePatientData(NameArr) {
     let DataErrorArr = [];
-    for(index in PatientList) {
+    for(index in NameArr) {
         try {
-            if(nameValidation(PatientList[index].Name) == false) throw "Patient name";
-            if(gradingValidation(PatientList[index].grading) == false) throw "Patient grading";
-            if(regionValidation(PatientList[index].region) == false) throw "Patient region";
+            if(nameValidation(NameArr[index]) == false) throw "Patient name";
+            if(gradingValidation(GradingArr[index]) == false) throw "Patient grading";
+            if(regionValidation(CityArr[index]) == false) throw "Patient region";
         }
         catch(err) {
           let problem = 'Problem with patientlist[' + index + '] data, specifically ' + err;
@@ -68,9 +65,10 @@ function validatePatientData(PatientList) {
           });
         }
     }
-    console.log(DataErrorArr); // test
+    
     DeleteFaultyPatientData(DataErrorArr);
   }
+
 
 function nameValidation(Name) {
     return isNaN(Name);
@@ -90,7 +88,9 @@ function DeleteFaultyPatientData(arr) {
     }
 }
 
-validatePatientData(PatientList);
+validatePatientData(NameArr);
+
+patientTables.regionPatients();
 
 function crowdedness(admitted, beds){
     percentile_crowd = admitted/beds;
@@ -140,4 +140,28 @@ function admitPatient(){
         console.log("equipment = " + HospitalList[index].eqp);
     }
 }
-    admitPatient();
+
+// Function that assigns what time a patient got admitted
+function timeOfAdmit(PatientList) {
+  for(index in PatientList) {
+    PatientList[index].timeAdmitted = Date.now();
+  }
+}
+
+
+// Function that checks if 14 days have passed since a patient got admitted
+// 12096e5 is 14 days in miliseconds
+function unadmitPatient(PatientList) {
+let timeForUnadmitArr = [];
+
+  for(index in PatientList) {
+    if(PatientList[index].timeAdmitted + 12096e5 <= Date.now())
+       timeForUnadmitArr.unshift(index); // unshift adds element to the front of array
+  }
+  DeleteFaultyPatientData(timeForUnadmitArr); // Reuse of delete function from validatePatientData
+}
+
+timeOfAdmit(PatientList);
+// Unadmit function being called every 10 seconds
+setInterval(unadmitPatient, 10000, PatientList); 
+setInterval( () => console.log(PatientList), 10000); // Test
