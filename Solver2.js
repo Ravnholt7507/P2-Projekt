@@ -163,12 +163,7 @@ function BatchPatients(){
     console.log(HospitalList[2].admitted)
     console.log(HospitalList[3].admitted)
     console.log(HospitalList[4].admitted)
-    let testArray = 0;
-    for(index in New_Patient_List){
-      if (New_Patient_List.grading == 0)
-        testArray += 1;
-    }
-    console.log(testArray);
+    
 }   
 
 BatchPatients();
