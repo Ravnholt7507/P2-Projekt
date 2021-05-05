@@ -48,45 +48,7 @@ TravelTimeList[23] = {from_region: 4, To_region: 3, min: 320}
 TravelTimeList[24] = {from_region: 4, To_region: 4, min: 0}
 
 // The main function that validates the data
-function validatePatientData(NameArr) {
-    let DataErrorArr = [];
-    for(index in NameArr) {
-        try {
-            if(nameValidation(NameArr[index]) == false) throw "Patient name";
-            if(gradingValidation(GradingArr[index]) == false) throw "Patient grading";
-            if(regionValidation(CityArr[index]) == false) throw "Patient region";
-        }
-        catch(err) {
-          let problem = 'Problem with patientlist[' + index + '] data, specifically ' + err;
-          console.error(problem);
-          DataErrorArr.unshift(index); // unshift adds element to the front of array
-          fs.appendFile('./Error.txt', problem + "\n", err => {
-            if(err) console.error("Error writing to Error.txt");
-          });
-        }
-    }
-    
-    DeleteFaultyPatientData(DataErrorArr);
-  }
 
-
-function nameValidation(Name) {
-    return isNaN(Name);
-}
-
-function gradingValidation(grading) {
-    return (grading === 0 || grading === 1 || grading === 2);
-}
-
-function regionValidation(region) {
-    return (region === 0 || region === 1 || region === 2 || region === 3 || region === 4);
-}
-
-function DeleteFaultyPatientData(arr) {
-    for(index in arr) {
-      PatientList.splice(arr[index], 1);
-    }
-}
 
 validatePatientData(NameArr);
 

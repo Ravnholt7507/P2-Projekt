@@ -6,14 +6,13 @@ let NameArr = fs.readFileSync('./Names.txt').toString().split("\r\n");
 
 regions.regionPatients(CityArr, NameArr, GradingArr)
 
-
 let PatientList = [];
-
 
 for (index in CityArr){
   
   PatientList[index] = {Name:NameArr[index], grading:GradingArr[index], region:regions.gradeList[index]}
 }
+
 
 
 let HospitalList = [0,0,0,0,0];
@@ -49,6 +48,46 @@ TravelTimeList[21] = {from_region: 4, To_region: 1, min: 120}
 TravelTimeList[22] = {from_region: 4, To_region: 2, min: 120}
 TravelTimeList[23] = {from_region: 4, To_region: 3, min: 320}
 TravelTimeList[24] = {from_region: 4, To_region: 4, min: 0}
+
+function validatePatientData(NameArr) {
+  let DataErrorArr = [];
+  for(index in NameArr) {
+      try {
+          if(nameValidation(NameArr[index]) == false) throw "Patient name";
+          if(gradingValidation(GradingArr[index]) == false) throw "Patient grading";
+          if(regionValidation(regions.gradeList[index]) == false) throw "Patient region";
+      }
+      catch(err) {
+        let problem = 'Problem with patientlist[' + index + '] data, specifically ' + err;
+        console.error(problem);
+        DataErrorArr.unshift(index); // unshift adds element to the front of array
+        fs.appendFile('./Error.txt', problem + "\n", err => {
+          if(err) console.error("Error writing to Error.txt");
+        });
+      }
+  }
+  
+  DeleteFaultyPatientData(DataErrorArr);
+}
+validatePatientData(NameArr)
+
+function nameValidation(Name) {
+  return isNaN(Name);
+}
+
+function gradingValidation(grading) {
+  return (grading == 0 || grading == 1 || grading == 2 || grading == 3);
+}
+
+function regionValidation(region) {
+  return (region == 0 || region == 1 || region == 2 || region == 3 || region == 4);
+}
+
+function DeleteFaultyPatientData(arr) {
+  for(index in arr) {
+    PatientList.splice(arr[index], 1);
+  }
+}
 
 function crowdedness(beds){
     if (beds > 0)
