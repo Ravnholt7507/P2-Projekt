@@ -1,48 +1,31 @@
-const fs = require('fs');
-const http = require('http');
+const express = require('express');
+const app = express();
+//const fs = require('fs');
 const port = 3000;
 
-const server = http.createServer(function(req, res) {
 
-  if (req.url === '/') {
-    res.writeHead(200, { 'Content-Type': 'text/html' })
-    fs.readFile('main.html', function(error, data) {
-        if (error) {
-            res.writeHead(404);
-            res.write('Error: File Not Found');
-        } else {
-            res.write(data);
-        }
-        res.end();
-    })
-  }
-
-  if (req.url === '/loggedIn=true') {
-    res.writeHead(200, { 'Content-Type': 'text/html' })
-    fs.readFile('loggedIn.html', function(error, data) {
-        if (error) {
-            res.writeHead(404);
-            res.write('Error: File Not Found');
-        } else {
-            res.write(data);
-        }
-        res.end();
-    })
-  }
-
-//    else {
-//       res.writeHead(404); 
-//       res.write('404 : Could not find path on this server'); 
-//       res.end();
-//    }
+app.set('view-engine', 'ejs');
+//app.use(express.urlencoded({ extended: false }));
 
 
+app.get('/', (req, res) => {
+    res.render('loggedIn.ejs', {Beds: 1, Staff: 2, Equipment: 1});
 });
 
-server.listen(port, function(error) {
-    if (error) {
-        console.log('Something went wrong', error);
-    } else {
-        console.log('Server is listening on port '+ port);
-    }
+app.get('/login', (req, res) => {
+    res.render('main.ejs');
 });
+
+app.post('/', (req, res) => {
+    console.log(req.body),
+    res.render('loggedIn.ejs', {Beds: 1, Staff: 2, Equipment: 1});
+});
+
+app.use(express.json());
+app.post('/api', (request, response) => {
+         console.log("I got a request!" + '\n' + 'Name: ' + request.body.iname + ' Grade: ' + request.body.igrade + ' City: ' + request.body.icity);
+         const data = request.body;
+         response.json({ status: "succes", Name: data.iname, Grade: data.igrade, City: data.icity})
+       });
+
+app.listen(port);
