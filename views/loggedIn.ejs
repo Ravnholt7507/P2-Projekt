@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>Pandemic program</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
+.w3-sidebar {
+  z-index: 3;
+  width: 250px;
+  top: 0px;
+  bottom: 0;
+  height: inherit;
+}
+</style>
+<body>
+
+<!-- Navbar 
+<div class="w3-top">
+  <div class="w3-bar w3-theme w3-top w3-left-align w3-large">
+    <a class="w3-bar-item w3-button w3-right w3-hide-large w3-hover-white w3-large w3-theme-l1" href="javascript:void(0)" onclick="w3_open()"><i class="fa fa-bars"></i></a>
+    <a href="#" class="w3-bar-item w3-button w3-theme-l1">Logo</a>
+    <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hover-white">About</a>
+    <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Values</a>
+    <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hover-white">News</a>
+    <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Contact</a>
+    <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hide-medium w3-hover-white">Clients</a>
+    <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hide-medium w3-hover-white">Partners</a>
+  </div>
+</div>
+-->
+<!-- Sidebar -->
+<nav class="w3-sidebar w3-bar-block w3-collapse w3-large w3-theme-l5 w3-animate-left" id="mySidebar">
+  <a href="javascript:void(0)" onclick="w3_close()" class="w3-right w3-xlarge w3-padding-large w3-hover-black w3-hide-large" title="Close Menu">
+    <i class="fa fa-remove"></i>
+  </a>
+  <h4 class="w3-bar-item"><b onclick="frontpage()">Menu</b></h4>
+  <a class="w3-bar-item w3-button w3-hover-black" href="#" onclick="Admit_Patient()">Admit Patients</a>
+  <a class="w3-bar-item w3-button w3-hover-black" href="#" onclick="Status_Regions()">Status of Regions</a>
+  <a class="w3-bar-item w3-button w3-hover-black" href="#" onclick="Instructions()">Instructions</a>
+  <a class="w3-bar-item w3-button w3-hover-black" href="#" onclick="Contact()">Contact</a>
+</nav>
+
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+<!-- Main content: shift it to the right by 250 pixels when the sidebar is visible -->
+<div class="w3-main" style="margin-left:250px">
+
+  <div class="w3-row w3-padding-64">
+    <div class="w3-twothird w3-container" id="frontpage">
+        <h1 class="w3-text-teal" id="h1">Hospital Management</h1>
+        <p id = "sub_text"> Manage Patients.</p>
+        <form class="Patientinput" action="/" id="pInput" type="hidden" method="POST">
+          <label for="fname">Patient name:</label><br>
+          <input type="text" id="pname" name="name" value="" required><br>
+          <label for="Grading">Grading:</label><br>
+          <select id="grading" name="grading">
+            <option value="-">-</option>
+            <option value=0>0</option>
+            <option value=1>1</option>
+            <option value=2>2</option>
+            <option value=3>3</option>
+          </select><br>
+          <label for="City">City:</label><br>
+          <input type="text" list="cities" id="city" name="City" required>
+          <datalist id="cities">
+            <option value="Brønderslev">
+            <option value="Frederikshavn">
+            <option value="Hjørring">
+            <option value="Jammerbugt">
+            <option value="Læsø">
+            <option value="Mariagerfjord">
+            <option value="Morsø">
+            <option value="Rebild">
+            <option value="Thisted">
+            <option value="Vesthimmerland">
+            <option value="Aalborg">
+            <option value="Favrskov">
+            <option value="Hedensted">
+            <option value="Herning">
+            <option value="Holstebro">
+            <option value="Horsens">
+            <option value="Ikast">
+            <option value="Lemvig">
+            <option value="Norddjurs">
+            <option value="Odder">
+            <option value="Randers">
+            <option value="Ringkøbing-Skjern">
+            <option value="Samsø">
+            <option value="Silkeborg">
+            <option value="Skanderborg">
+            <option value="Skive">
+            <option value="Struer">
+            <option value="Syddjurs">
+            <option value="Viborg">
+            <option value="Aarhus">
+            <option value="Assens">
+            <option value="Billund">
+            <option value="Esbjerg">
+            <option value="Fanø">
+            <option value="Fredericia">
+            <option value="Faaborg-Midtfyn">
+            <option value="Haderslev">
+            <option value="Kerteminde">
+            <option value="Kolding">
+            <option value="Langeland">
+            <option value="Middelfart">
+            <option value="Nordfyns">
+            <option value="Nyborg">
+            <option value="Odense">
+            <option value="Svendborg">
+            <option value="Sønderborg">
+            <option value="Tønder">
+            <option value="Varde">
+            <option value="Vejen">
+            <option value="Vejle">
+            <option value="Ærø">
+            <option value="Aabenraa">
+            <option value="Faxe">
+            <option value="Greve">
+            <option value="Guldborgsund">
+            <option value="Holbæk">
+            <option value="Kalundborg">
+            <option value="Køge">
+            <option value="Lejre">
+            <option value="Lolland">
+            <option value="Næstved">
+            <option value="Odsherred">
+            <option value="Ringsted">
+            <option value="Roskilde">
+            <option value="Slagelse">
+            <option value="Solrød">
+            <option value="Sorø">
+            <option value="Stevns">
+            <option value="Vordingborg">
+            <option value="Albertslund">
+            <option value="Allerød">
+            <option value="Ballerup">
+            <option value="Bornholm">
+            <option value="Brøndby">
+            <option value="København">
+            <option value="Dragør">
+            <option value="Egedal">
+            <option value="Fredensborg">
+            <option value="Frederiksberg">
+            <option value="Frederikssund">
+            <option value="Furesø">
+            <option value="Gentofte">
+            <option value="Gladsaxe">
+            <option value="Glostrup">
+            <option value="Gribskov">
+            <option value="Halsnæs">
+            <option value="Helsingør">
+            <option value="Herlev">
+            <option value="Hillerød">
+            <option value="Hvidovre">
+            <option value="Høje-Taastrup">
+            <option value="Hørsholm">
+            <option value="Ishøj">
+            <option value="Lyngby-Taarbæk">
+            <option value="Rudersdal">
+            <option value="Rødovre">
+            <option value="Tårnby">
+            <option value="Vallensbæk">
+          </datalist><br><br>
+          <input type="submit" value="Admit">
+        </form>
+        <div id="statistics">
+          <table>
+            <tr>
+              <th>Region</th>
+              <th>Beds</th>
+              <th>Staff</th>
+              <th>Equipment</th>
+            </tr>
+            <tr>
+              <th>1</th>
+              <th><%= Beds %></th>
+              <th><%= Staff %></th>
+              <th><%= Equipment %></th>
+            </tr>
+            <tr>
+              <th>2</th>
+              <th><%= Beds %></th>
+              <th><%= Staff %></th>
+              <th><%= Equipment %></th>
+            </tr>
+          </table>
+        </div>
+    </div>
+    <div class="w3-third w3-container">
+      <p class="w3-border w3-padding-large w3-padding-32 w3-center">No ads to look at here.</p>
+      <p class="w3-border w3-padding-large w3-padding-64 w3-center">No ads to look at here.</p>
+    </div>
+  </div>
+<!--
+  <div class="w3-row">
+    <div class="w3-twothird w3-container">
+      <h1 class="w3-text-teal">Heading</h1>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum
+        dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+    </div>
+    <div class="w3-third w3-container">
+      <p class="w3-border w3-padding-large w3-padding-32 w3-center">AD</p>
+      <p class="w3-border w3-padding-large w3-padding-64 w3-center">AD</p>
+    </div>
+  </div>
+
+  <div class="w3-row w3-padding-64">
+    <div class="w3-twothird w3-container">
+      <h1 class="w3-text-teal">Heading</h1>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum
+        dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+    </div>
+    <div class="w3-third w3-container">
+      <p class="w3-border w3-padding-large w3-padding-32 w3-center">AD</p>
+      <p class="w3-border w3-padding-large w3-padding-64 w3-center">AD</p>
+    </div>
+  </div>
+-->
+
+  <!-- Pagination 
+  <div class="w3-center w3-padding-32">
+    <div class="w3-bar">
+      <a class="w3-button w3-black" href="#">1</a>
+      <a class="w3-button w3-hover-black" href="#">2</a>
+      <a class="w3-button w3-hover-black" href="#">3</a>
+      <a class="w3-button w3-hover-black" href="#">4</a>
+      <a class="w3-button w3-hover-black" href="#">5</a>
+      <a class="w3-button w3-hover-black" href="#">»</a>
+    </div>
+  </div>
+
+  <footer id="myFooter">
+    <div class="w3-container w3-theme-l2 w3-padding-32">
+      <h4>Footer</h4>
+    </div>
+
+    <div class="w3-container w3-theme-l1">
+      <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+    </div>
+  </footer>
+--> 
+<!-- END MAIN -->
+</div>
+
+<script>
+// Get the Sidebar
+var mySidebar = document.getElementById("mySidebar");
+
+// Get the DIV with overlay effect
+var overlayBg = document.getElementById("myOverlay");
+
+// Toggle between showing and hiding the sidebar, and add overlay effect
+function w3_open() {
+  if (mySidebar.style.display === 'block') {
+    mySidebar.style.display = 'none';
+    overlayBg.style.display = "none";
+  } else {
+    mySidebar.style.display = 'block';
+    overlayBg.style.display = "block";
+  }
+}
+
+// Close the sidebar with the close button
+function w3_close() {
+  mySidebar.style.display = "none";
+  overlayBg.style.display = "none";
+}
+
+let pInput = document.getElementById("pInput");
+pInput.style.display = "none";
+
+function frontpage() {
+  document.getElementById("h1").innerHTML = "Hospital Management";
+  document.getElementById("sub_text").innerHTML = "Manage Patients."; 
+  //document.getElementById("sub_text").children = 0; //'<p id = "sub_text"> Manage Patients.</p>'
+  //document.getElementById("frontpage") = '<div class="w3-twothird w3-container"><h1 class="w3-text-teal" id="h1">Hospital Management</h1><p id = "sub_text"> Manage Patients.</p></div>';
+  //delete document.getElementById("Patientinput");
+  pInput.style.display = "none";
+}
+
+function Admit_Patient() {
+  document.getElementById("h1").innerHTML = "Admit Patients";
+  document.getElementById("sub_text").innerHTML = "Here you can admit patients. Please fill out the input fields below to admit a patient:";
+  //let fields =  '<form class="Patientinput" action="/"><label for="fname">Patient name:</label><br><input type="text" id="pname" name="name"><br><label for="Grading">Grading:</label><br><input type="text" id="grading" name="Grading"><br><label for="City">City:</label><br><input type="text" id="city" name="City"><br><br><input type="submit" value="Submit"></form> ';
+  //document.getElementById("sub_text").outerHTML += fields;
+  //pInput.type = "text";
+  pInput.style.display = "block";
+}
+
+function Status_Regions() {
+  document.getElementById("h1").innerHTML = "Status";
+  document.getElementById("sub_text").innerHTML = "Functionality will follow";
+  pInput.style.display = "none";
+}
+
+function Instructions() {
+  document.getElementById("h1").innerHTML = "Instructions";
+  document.getElementById("sub_text").innerHTML = "Instructions will follow.";
+  pInput.style.display = "none";
+}
+
+function Contact() {
+  document.getElementById("h1").innerHTML = "Contact";
+  document.getElementById("sub_text").innerHTML = "A link to our <a href='https://github.com/Ravnholt7507/P2-Projekt/'>github</a>.";
+  pInput.style.display = "none";
+}
+
+pInput.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  // Get Patient data for validation
+  let Name = document.getElementById("pname");
+  let Grading = document.getElementById("grading");
+  let City = document.getElementById("city");
+
+  // Validation of Name input - name cannot be number
+  if (!isNaN(Name.value)) {
+    alert("Please enter the patient's name");
+    e.preventDefault();
+    return;
+  }
+
+  // Validation of grading input
+  if (Grading.value != 0 && Grading.value != 1 && Grading.value != 2 && Grading.value != 3) {
+    alert("Please select an illness grade");
+    e.preventDefault();
+    return;
+  }
+
+  // Validatation of city input
+  // If all inputs are of correct type, data will be submitted and the form is cleared
+  let cities = document.getElementById("cities");
+  for (index in cities.options) {
+    if (City.value === cities.options[index].value) {
+      console.log("Name: "+ Name.value +", Grading: " + Grading.value + ", City: " + City.value);
+      let iname = Name.value; let igrade = Grading.value; let icity = City.value;
+      const patientObj = {iname, igrade, icity};
+      const options = {
+        method: 'POST',
+        headers: {"content-type": "application/json"},
+        body: JSON.stringify(patientObj)
+      };
+
+      const response = await fetch("/api", options);
+      const jsonData = await response.json();
+      console.log(jsonData);
+      Name.value = "";
+      Grading.value = "-";
+      City.value = "";
+      return;
+    }
+  }
+  alert("Please select a valid city");
+  e.preventDefault();
+  
+});
+
+</script>
+
+</body>
+</html>
