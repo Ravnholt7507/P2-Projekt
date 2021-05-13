@@ -1,7 +1,7 @@
 let regions = require('./branch.js')
 let fs = require('fs');
 let CityArr = fs.readFileSync('./Cities.txt').toString().split("\r\n");
-let GradingArr = fs.readFileSync('./gradings.txt').toString().split("\r\n");
+let GradingArr = fs.readFileSync('./Grades.txt').toString().split("\r\n");
 let NameArr = fs.readFileSync('./Names.txt').toString().split("\r\n");
 
 regions.regionPatients(CityArr, NameArr, GradingArr)
@@ -203,49 +203,21 @@ function BatchPatients(){
     console.log(HospitalList[3].admitted)
     console.log(HospitalList[4].admitted)
     console.log(New_Patient_List)
+
+    for (index in New_Patient_List){
+      // convert JSON object to string
+      const data = JSON.stringify(New_Patient_List[index]); 
+     // write JSON string to a file
+     fs.appendFile('user.json', data + "\n", (err) => {
+       if (err) {
+           throw err;
+       }
+   });
+ }
  }
 
 
 BatchPatients();
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// let PatientList = [];
-// PatientList[0] = {Name: "Jeff", grading: 2, region: 4}
-// PatientList[1] = {Name: "Kebab", grading: 2, region: 4},
-// PatientList[2] = {Name: "Smurf", grading: 2, region: 4}
-// PatientList[3] = {Name: "Egon", grading: 2, region: 4}
-// PatientList[4] = {Name: "Andre", grading: 2, region: 3}
-// PatientList[5] = {Name: "Jeppe", grading: 3, region: 1}
-// PatientList[6] = {Name: "Rune", grading: 3, region: 4}
-// PatientList[7] = {Name: "Elle", grading: 3, region: 2}
-// PatientList[8] = {Name: "Andrea", grading: 1, region: 2}
-// PatientList[9] = {Name: "Ramond", grading: 1, region: 0}
-// PatientList[10] = {Name: "Dunnis", grading: 1, region: 0}
-// PatientList[11] = {Name: "Jsde", grading: 2, region: 1}
-
-  //   for (index in New_Patient_List){
-  //       // convert JSON object to string
-  //       const data = JSON.stringify(New_Patient_List[index]); 
-  //      // write JSON string to a file
-  //      fs.appendFile('user.json', data + "\n", (err) => {
-  //        if (err) {
-  //            throw err;
-  //        }
-  //        console.log("JSON data is saved.");
-  //    });
-  //  }
+    
