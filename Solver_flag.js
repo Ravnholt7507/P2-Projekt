@@ -1,30 +1,16 @@
 let regions = require('./branch.js')
 let fs = require('fs');
 let CityArr = fs.readFileSync('./Cities.txt').toString().split("\r\n");
-let GradingArr = fs.readFileSync('./gradings.txt').toString().split("\r\n");
+let GradingArr = fs.readFileSync('./Grades.txt').toString().split("\r\n");
 let NameArr = fs.readFileSync('./Names.txt').toString().split("\r\n");
 
 regions.regionPatients(CityArr, NameArr, GradingArr)
 
-PatientList = [];
+let PatientList = [];
 for (index in CityArr){
   PatientList[index] = {Name: NameArr[index], grading: GradingArr[index], region: regions.gradeList[index]}
 }
-
-
-let PatientList = [];
-PatientList[0] = {Name: "Jeff", grading: 2, region: 4, flag: 0}
-PatientList[1] = {Name: "Kebab", grading: 2, region: 4, flag: 0}
-PatientList[2] = {Name: "Smurf", grading: 2, region: 4, flag: 0}
-PatientList[3] = {Name: "Egon", grading: 2, region: 4, flag: 0}
-PatientList[4] = {Name: "w", grading: 1, region: 4, flag: 0}
-PatientList[5] = {Name: "a", grading: 1, region: 4, flag: 0}
-PatientList[6] = {Name: "v", grading: 1, region: 4, flag: 0}
-PatientList[7] = {Name: "s", grading: 2, region: 4, flag: 0}
-PatientList[8] = {Name: "f", grading: 3, region: 4, flag: 0}
-PatientList[9] = {Name: "e", grading: 1, region: 4, flag: 0}
-PatientList[10] = {Name: "v", grading: 2, region: 4, flag: 0}
-PatientList[11] = {Name: "b", grading: 2, region: 4, flag: 0}
+console.log(PatientList[7])
 
 let HospitalList = [0,0,0,0,0];
 HospitalList[0] = {ID: 0, Region: 0, Navn: 'UniversetsHospital', Address: 'Example', Beds: 3, admitted: 0, eqp: 300}
@@ -61,44 +47,44 @@ TravelTimeList[23] = {from_region: 4, To_region: 3, min: 1}
 TravelTimeList[24] = {from_region: 4, To_region: 4, min: 0}
 
 
-// function validatePatientData(NameArr) {
-//   let DataErrorArr = [];
-//   for(index in NameArr) {
-//       try {
-//           if(nameValidation(NameArr[index]) == false) throw "Patient name";
-//           if(gradingValidation(GradingArr[index]) == false) throw "Patient grading";
-//           if(regionValidation(regions.gradeList[index]) == false) throw "Patient region";
-//       }
-//       catch(err) {
-//         let problem = 'Problem with patientlist[' + index + '] data, specifically ' + err;
-//         console.error(problem);
-//         DataErrorArr.unshift(index); // unshift adds element to the front of array
-//         fs.appendFile('./Error.txt', problem + "\n", err => {
-//           if(err) console.error("Error writing to Error.txt");
-//         });
-//       }
-//   }
-//   DeleteFaultyPatientData(DataErrorArr);
-// }
-// validatePatientData(NameArr)
+function validatePatientData(NameArr) {
+  let DataErrorArr = [];
+  for(index in NameArr) {
+      try {
+          if(nameValidation(NameArr[index]) == false) throw "Patient name";
+          if(gradingValidation(GradingArr[index]) == false) throw "Patient grading";
+          if(regionValidation(regions.gradeList[index]) == false) throw "Patient region";
+      }
+      catch(err) {
+        let problem = 'Problem with patientlist[' + index + '] data, specifically ' + err;
+        console.error(problem);
+        DataErrorArr.unshift(index); // unshift adds element to the front of array
+        fs.appendFile('./Error.txt', problem + "\n", err => {
+          if(err) console.error("Error writing to Error.txt");
+        });
+      }
+  }
+  DeleteFaultyPatientData(DataErrorArr);
+}
+validatePatientData(NameArr)
 
-// function nameValidation(Name) {
-//   return isNaN(Name);
-// }
+function nameValidation(Name) {
+  return isNaN(Name);
+}
 
-// function gradingValidation(grading) {
-//   return (grading == 0 || grading == 1 || grading == 2 || grading == 3);
-// }
+function gradingValidation(grading) {
+  return (grading == 0 || grading == 1 || grading == 2 || grading == 3);
+}
 
-// function regionValidation(region) {
-//   return (region == 0 || region == 1 || region == 2 || region == 3 || region == 4);
-// }
+function regionValidation(region) {
+  return (region == 0 || region == 1 || region == 2 || region == 3 || region == 4);
+}
 
-// function DeleteFaultyPatientData(arr) {
-//   for(index in arr) {
-//     PatientList.splice(arr[index], 1);
-//   }
-// }
+function DeleteFaultyPatientData(arr) {
+  for(index in arr) {
+    PatientList.splice(arr[index], 1);
+  }
+}
 
 //Checks capacity in hospital
 function crowdedness(beds){
@@ -199,9 +185,9 @@ function HospitalTracker(region, PatientGrade){
 }
 
 // Runs through all new patients which needs to be admitted (this is the function we call initially)
-function BatchPatients(PatientList, New_Patient_List){
+function BatchPatients(){
     let New_Patient_List = [];
-    let Nr_patients = PatientList.length
+    let Nr_patients = GradingArr.length
 
     for(let i=0; i<Nr_patients; i++){
      New_Patient_List = Admit(PatientList[i], New_Patient_List)
@@ -249,28 +235,28 @@ HospitalList
 
 
 
-// let PatientList = [];
-// PatientList[0] = {Name: "Jeff", grading: 2, region: 4}
-// PatientList[1] = {Name: "Kebab", grading: 2, region: 4},
-// PatientList[2] = {Name: "Smurf", grading: 2, region: 4}
-// PatientList[3] = {Name: "Egon", grading: 2, region: 4}
-// PatientList[4] = {Name: "Andre", grading: 2, region: 3}
-// PatientList[5] = {Name: "Jeppe", grading: 3, region: 1}
-// PatientList[6] = {Name: "Rune", grading: 3, region: 4}
-// PatientList[7] = {Name: "Elle", grading: 3, region: 2}
-// PatientList[8] = {Name: "Andrea", grading: 1, region: 2}
-// PatientList[9] = {Name: "Ramond", grading: 1, region: 0}
-// PatientList[10] = {Name: "Dunnis", grading: 1, region: 0}
-// PatientList[11] = {Name: "Jsde", grading: 2, region: 1}
+// // let PatientList = [];
+// // PatientList[0] = {Name: "Jeff", grading: 2, region: 4}
+// // PatientList[1] = {Name: "Kebab", grading: 2, region: 4},
+// // PatientList[2] = {Name: "Smurf", grading: 2, region: 4}
+// // PatientList[3] = {Name: "Egon", grading: 2, region: 4}
+// // PatientList[4] = {Name: "Andre", grading: 2, region: 3}
+// // PatientList[5] = {Name: "Jeppe", grading: 3, region: 1}
+// // PatientList[6] = {Name: "Rune", grading: 3, region: 4}
+// // PatientList[7] = {Name: "Elle", grading: 3, region: 2}
+// // PatientList[8] = {Name: "Andrea", grading: 1, region: 2}
+// // PatientList[9] = {Name: "Ramond", grading: 1, region: 0}
+// // PatientList[10] = {Name: "Dunnis", grading: 1, region: 0}
+// // PatientList[11] = {Name: "Jsde", grading: 2, region: 1}
 
-  //   for (index in New_Patient_List){
-  //       // convert JSON object to string
-  //       const data = JSON.stringify(New_Patient_List[index]); 
-  //      // write JSON string to a file
-  //      fs.appendFile('user.json', data + "\n", (err) => {
-  //        if (err) {
-  //            throw err;
-  //        }
-  //        console.log("JSON data is saved.");
-  //    });
-  //  }
+//   //   for (index in New_Patient_List){
+//   //       // convert JSON object to string
+//   //       const data = JSON.stringify(New_Patient_List[index]); 
+//   //      // write JSON string to a file
+//   //      fs.appendFile('user.json', data + "\n", (err) => {
+//   //        if (err) {
+//   //            throw err;
+//   //        }
+//   //        console.log("JSON data is saved.");
+//   //    });
+//   //  }
