@@ -10,14 +10,13 @@ let PatientList = [];
 for (index in CityArr){
   PatientList[index] = {Name: NameArr[index], grading: GradingArr[index], region: regions.gradeList[index]}
 }
-console.log(PatientList[7])
 
 let HospitalList = [0,0,0,0,0];
-HospitalList[0] = {ID: 0, Region: 0, Navn: 'UniversetsHospital', Address: 'Example', Beds: 3, admitted: 0, eqp: 300}
-HospitalList[1] = {ID: 1, Region: 1, Navn: 'Midt Hospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300}
-HospitalList[2] = {ID: 2, Region: 2, Navn: 'Odense Hospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300}
-HospitalList[3] = {ID: 3, Region: 3, Navn: 'Sjalland Hospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300}
-HospitalList[4] = {ID: 4, Region: 4, Navn: 'Koebenhavn Hospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300}
+HospitalList[0] = {ID: 0, Region: 0, Navn: 'UniversetsHospital', Address: 'Example', Beds: 300, admitted: 0, eqp: 300}
+HospitalList[1] = {ID: 1, Region: 1, Navn: 'Midt Hospital', Address: 'Example', Beds: 300, admitted: 0, eqp: 300}
+HospitalList[2] = {ID: 2, Region: 2, Navn: 'Odense Hospital', Address: 'Example', Beds: 300, admitted: 0, eqp: 300}
+HospitalList[3] = {ID: 3, Region: 3, Navn: 'Sjalland Hospital', Address: 'Example', Beds: 300, admitted: 0, eqp: 300}
+HospitalList[4] = {ID: 4, Region: 4, Navn: 'Koebenhavn Hospital', Address: 'Example', Beds: 300, admitted: 0, eqp: 300}
 
 let TravelTimeList = [];
 TravelTimeList[0] = {from_region: 0, To_region: 0, min: 0}
@@ -125,7 +124,6 @@ function findPatient(Region, grading, New_Patient_List){
 //It also calls itself recursively, if two patients in a region can be swapped. 
 //Returns updated patient list.
 function Admit(patientObj, New_Patient_List){
-  console.log(patientObj.Name)
   let patientGrade = patientObj.grading;
   let patientRegion = patientObj.region;
   let NewRegion = travel_Hospital(patientRegion, patientGrade)
@@ -202,7 +200,6 @@ function BatchPatients(){
     console.log(HospitalList[2].admitted)
     console.log(HospitalList[3].admitted)
     console.log(HospitalList[4].admitted)
-    console.log(New_Patient_List)
  }
 
 BatchPatients();
