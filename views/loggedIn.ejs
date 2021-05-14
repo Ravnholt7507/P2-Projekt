@@ -170,6 +170,15 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
           </datalist><br><br>
           <input type="submit" value="Admit">
         </form>
+        <br>
+        <div id="submitResult">
+          
+        </div>
+        <br>
+        <div id="solve">
+          <p>Select which type of solver the system is using. Using solver 1 means patients can be moved more than once per week. If solver 2 is used, patients can only be moved between hospitals once a week.</p>
+          <p><b id="solver">Currently in use: Solver <%= solver %></b></p> <a href="#" onclick="solverChange()">Change</a>
+        </div>
         <div id="statistics">
           <table>
             <tr>
@@ -275,6 +284,11 @@ function w3_close() {
 
 let pInput = document.getElementById("pInput");
 pInput.style.display = "none";
+let solve = document.getElementById("solve");
+solve.style.display = "none";
+let statistics = document.getElementById("statistics");
+statistics.style.display = "none";
+let submitResults = document.getElementById("submitResult");
 
 function frontpage() {
   document.getElementById("h1").innerHTML = "Hospital Management";
@@ -283,6 +297,9 @@ function frontpage() {
   //document.getElementById("frontpage") = '<div class="w3-twothird w3-container"><h1 class="w3-text-teal" id="h1">Hospital Management</h1><p id = "sub_text"> Manage Patients.</p></div>';
   //delete document.getElementById("Patientinput");
   pInput.style.display = "none";
+  solve.style.display = "none";
+  statistics.style.display = "none";
+  submitResults.innerHTML = "";
 }
 
 function Admit_Patient() {
@@ -292,24 +309,50 @@ function Admit_Patient() {
   //document.getElementById("sub_text").outerHTML += fields;
   //pInput.type = "text";
   pInput.style.display = "block";
+  solve.style.display = "block";
+  statistics.style.display = "none";
+  submitResults.innerHTML = "";
 }
 
 function Status_Regions() {
   document.getElementById("h1").innerHTML = "Status";
   document.getElementById("sub_text").innerHTML = "Functionality will follow";
   pInput.style.display = "none";
+  solve.style.display = "none";
+  statistics.style.display = "block";
+  submitResults.innerHTML = "";
 }
 
 function Instructions() {
   document.getElementById("h1").innerHTML = "Instructions";
   document.getElementById("sub_text").innerHTML = "Instructions will follow.";
   pInput.style.display = "none";
+  solve.style.display = "none";
+  statistics.style.display = "none";
+  submitResults.innerHTML = "";
 }
 
 function Contact() {
   document.getElementById("h1").innerHTML = "Contact";
   document.getElementById("sub_text").innerHTML = "A link to our <a href='https://github.com/Ravnholt7507/P2-Projekt/'>github</a>.";
   pInput.style.display = "none";
+  solve.style.display = "none";
+  statistics.style.display = "none";
+  submitResults.innerHTML = "";
+}
+
+async function solverChange() {
+  const solver = {change: "change"};
+  const options = {
+      method: 'POST',
+      headers: {"content-type": "application/json"},
+      body: JSON.stringify(solver)
+  };
+
+  const response = await fetch("/solver", options);
+  const jsonData = await response.json();
+  console.log(jsonData);
+  document.getElementById("solver").innerHTML = "Currently in use: Solver " + jsonData.solver;
 }
 
 pInput.addEventListener("submit", async (e) => {
@@ -323,14 +366,12 @@ pInput.addEventListener("submit", async (e) => {
   // Validation of Name input - name cannot be number
   if (!isNaN(Name.value)) {
     alert("Please enter the patient's name");
-    e.preventDefault();
     return;
   }
 
   // Validation of grading input
   if (Grading.value != 0 && Grading.value != 1 && Grading.value != 2 && Grading.value != 3) {
     alert("Please select an illness grade");
-    e.preventDefault();
     return;
   }
 
@@ -350,6 +391,7 @@ pInput.addEventListener("submit", async (e) => {
 
       const response = await fetch("/api", options);
       const jsonData = await response.json();
+      submitResults.innerHTML = "<b>Result: </b>Patient is to be submitted to " + jsonData.City;
       console.log(jsonData);
       Name.value = "";
       Grading.value = "-";
@@ -358,7 +400,6 @@ pInput.addEventListener("submit", async (e) => {
     }
   }
   alert("Please select a valid city");
-  e.preventDefault();
   
 });
 
