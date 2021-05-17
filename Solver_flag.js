@@ -1,22 +1,14 @@
 let regions = require('./branch.js');
  let fs = require('fs');
-// let CityArr = fs.readFileSync('./Cities.txt').toString().split("\r\n");
-// let GradingArr = fs.readFileSync('./gradings.txt').toString().split("\r\n");
-// let NameArr = fs.readFileSync('./Names.txt').toString().split("\r\n");
 
-// regions.regionPatients(CityArr, NameArr, GradingArr)
-
-// PatientList = [];
-// for (index in CityArr){
-//   PatientList[index] = {Name: NameArr[index], grading: GradingArr[index], region: regions.gradeList[index]}
-// }
+let PH_array = [];
 
 let HospitalList = [0,0,0,0,0];
-HospitalList[0] = {ID: 0, Region: 0, Navn: 'UniversetsHospital', Address: 'Example', Beds: 3, admitted: 0, eqp: 300}
-HospitalList[1] = {ID: 1, Region: 1, Navn: 'Midt Hospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300}
-HospitalList[2] = {ID: 2, Region: 2, Navn: 'Odense Hospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300}
-HospitalList[3] = {ID: 3, Region: 3, Navn: 'Sjalland Hospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300}
-HospitalList[4] = {ID: 4, Region: 4, Navn: 'Koebenhavn Hospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300}
+HospitalList[0] = {ID: 0, Region: 0, Navn: 'UniversetsHospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300, staff: 2}
+HospitalList[1] = {ID: 1, Region: 1, Navn: 'Midt Hospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300, staff: 2}
+HospitalList[2] = {ID: 2, Region: 2, Navn: 'Odense Hospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300, staff: 2}
+HospitalList[3] = {ID: 3, Region: 3, Navn: 'Sjalland Hospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300, staff: 2}
+HospitalList[4] = {ID: 4, Region: 4, Navn: 'Koebenhavn Hospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300, staff: 2}
 
 let TravelTimeList = [];
 TravelTimeList[0] = {from_region: 0, To_region: 0, min: 0}
@@ -44,7 +36,6 @@ TravelTimeList[21] = {from_region: 4, To_region: 1, min: 3}
 TravelTimeList[22] = {from_region: 4, To_region: 2, min: 2}
 TravelTimeList[23] = {from_region: 4, To_region: 3, min: 1}
 TravelTimeList[24] = {from_region: 4, To_region: 4, min: 0}
-
 
 // function validatePatientData(NameArr) {
 //   let DataErrorArr = [];
@@ -93,14 +84,19 @@ function crowdedness(beds){
         return 0;
 }
 
-function cityToRegion(PatientList, city){
+function eqp(equip){
+  if (equip > 0)
+      return 1;
+  else
+      return 0;
+}
 
+function cityToRegion(PatientList, city){
 let placeholder = 0;
   for(index in regions.regionCities){
     if(placeholder < regions.regionCities[index].length)
        placeholder = regions.regionCities[index].length;
  }
-
   for (index in regions.regionCities){
     for(i = 0; i < placeholder; i++){
       if (city == regions.regionCities[index][i])
@@ -138,7 +134,7 @@ function findPatient(Region, grading, New_Patient_List){
   return "no";
 }
 
-//Admit is called for each new patient. It essentially changes their region to match the most suitable hospital.
+//Admit is called for each new patient. It essentially changes their region to match the most suitable hospital. 
 //It also calls itself recursively, if two patients in a region can be swapped. 
 //Returns updated patient list.
 function Admit(patientObj, New_Patient_List){
@@ -153,11 +149,13 @@ function Admit(patientObj, New_Patient_List){
     let patientIndex = findPatient(ReplaceInHospital, LowestGradePatient(ReplaceInHospital, New_Patient_List), New_Patient_List)
     New_Patient_List[patientIndex].flag = 1;
     Admit(New_Patient_List[patientIndex], New_Patient_List)
+    HospitalTracker(New_Patient_List[patientIndex].region, New_Patient_List[patientIndex].grade, true)
     New_Patient_List.splice(patientIndex, 1)
     patientObj.region = ReplaceInHospital;
   }
+  PH_array.push(patientObj);
   New_Patient_List.push(patientObj);
-  HospitalTracker(patientObj.region, patientGrade)
+  HospitalTracker(patientObj.region, patientGrade, false)
   return New_Patient_List
 }
 
@@ -190,13 +188,21 @@ function LowestGradePatient(Region, New_Patient_List){
 }
 
 //Changes number of beds/admitted in HospitalLists, when admitting a patient
-function HospitalTracker(region, PatientGrade){
-  console.log(PatientGrade)
+function HospitalTracker(region, PatientGrade, remove){
+  if (remove == false){
     HospitalList[region].admitted += 1
     if (PatientGrade > 0)
       HospitalList[region].Beds -= 1
     if (PatientGrade == 3)
       HospitalList[region].eqp -= 1
+  }
+  else if (remove == true){
+    HospitalList[region].admitted -= 1;
+    if (PatientGrade > 0)
+      HospitalList[region].Beds += 1;
+    if (PatientGrade == 3)
+      HospitalList[region].eqp += 1;
+  }
 }
 
 // Runs through all new patients which needs to be admitted (this is the function we call initially)
@@ -219,6 +225,10 @@ function BatchPatients(PatientList, city, New_Patient_List){
     return New_Patient_List
  }
 
+function Delete_PH_array(){
+  PH_array.splice(0, PH_array.length)
+}
+
 module.exports = {
 BatchPatients,
 Admit,
@@ -230,6 +240,8 @@ travel_Hospital,
 crowdedness,
 cityToRegion,
 HospitalList,
+PH_array,
+Delete_PH_array,
 }
 
 
