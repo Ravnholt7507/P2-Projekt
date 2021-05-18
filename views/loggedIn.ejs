@@ -40,6 +40,7 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
   </a>
   <h4 class="w3-bar-item"><b onclick="frontpage()">Menu</b></h4>
   <a class="w3-bar-item w3-button w3-hover-black" href="#" onclick="Admit_Patient()">Admit Patients</a>
+  <a class="w3-bar-item w3-button w3-hover-black" href="#" onclick="Unadmit_Patient()">Unadmit Patients</a>
   <a class="w3-bar-item w3-button w3-hover-black" href="#" onclick="Status_Regions()">Status of Regions</a>
   <a class="w3-bar-item w3-button w3-hover-black" href="#" onclick="Instructions()">Instructions</a>
   <a class="w3-bar-item w3-button w3-hover-black" href="#" onclick="Contact()">Contact</a>
@@ -171,6 +172,13 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
           <input type="submit" value="Admit">
         </form>
         <br>
+        <div id="unadmit">
+          <form>
+            <label for="search">Search</label>
+            <input type="text" id="Search" list="patients">
+            <button type="submit">Unadmit</button>
+          </form>
+        </div><br>
         <div id="submitResult">
           
         </div>
@@ -195,6 +203,24 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
             </tr>
             <tr>
               <th>2</th>
+              <th><%= Beds %></th>
+              <th><%= Staff %></th>
+              <th><%= Equipment %></th>
+            </tr>
+            <tr>
+              <th>3</th>
+              <th><%= Beds %></th>
+              <th><%= Staff %></th>
+              <th><%= Equipment %></th>
+            </tr>
+            <tr>
+              <th>4</th>
+              <th><%= Beds %></th>
+              <th><%= Staff %></th>
+              <th><%= Equipment %></th>
+            </tr>
+            <tr>
+              <th>5</th>
               <th><%= Beds %></th>
               <th><%= Staff %></th>
               <th><%= Equipment %></th>
@@ -289,6 +315,8 @@ solve.style.display = "none";
 let statistics = document.getElementById("statistics");
 statistics.style.display = "none";
 let submitResults = document.getElementById("submitResult");
+let unadmit = document.getElementById("unadmit");
+unadmit.style.display = "none";
 
 function frontpage() {
   document.getElementById("h1").innerHTML = "Hospital Management";
@@ -300,6 +328,7 @@ function frontpage() {
   solve.style.display = "none";
   statistics.style.display = "none";
   submitResults.innerHTML = "";
+  unadmit.style.display = "none";
 }
 
 function Admit_Patient() {
@@ -312,7 +341,73 @@ function Admit_Patient() {
   solve.style.display = "block";
   statistics.style.display = "none";
   submitResults.innerHTML = "";
+  unadmit.style.display = "none";
 }
+
+function Unadmit_Patient() {
+  document.getElementById("h1").innerHTML = "Unadmit Patients";
+  document.getElementById("sub_text").innerHTML = "Here patients can be unadmitted. Type in a name to search for a patient: ";
+  pInput.style.display = "none";
+  solve.style.display = "none";
+  statistics.style.display = "none";
+  submitResults.innerHTML = "";
+  unadmit.style.display = "block";
+  getPatientlist();
+}
+
+async function getPatientlist() {
+  const options = {
+      method: 'POST',
+      headers: {"content-type": "application/json"},
+      body: JSON.stringify()
+  };
+
+  const response = await fetch("/patients", options);
+  const jsonData = await response.json();
+  console.log(jsonData); //test
+  console.log(jsonData.length); //test
+  // let patientlist = document.getElementById("patients");
+  // patientlist.innerhtml = '<datalist id="patients">';
+  // let dummyvar = '';
+  // for(index in jsonData) {
+  //   console.log(jsonData[index].name);
+  //   dummyvar += '<option value="' + jsonData[index].name + ', grade: ' + jsonData[index].grade + ', region: ' + jsonData[index].region + '>';
+  // }
+  // patientlist.innerhtml = '<datalist id="patients">'+ dummyvar + '</datalist>';  
+  patientslist = document.createElement('datalist');
+  patientslist.id = 'patients';
+  for (index in jsonData) {
+    var option = document.createElement('option');
+    option.value = jsonData[index].name + ' grade: ' + jsonData[index].grade + ' region: ' +jsonData[index].region;
+    option.id = index;
+    patientslist.appendChild(option);
+  }
+  unadmit.appendChild(patientslist);
+}
+
+unadmit.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  let patient = document.getElementById("Search");
+  let yetAnotherDummyVar = document.querySelector('option[value="' + patient.value + '"]');
+  if (yetAnotherDummyVar == null) {
+    alert("Please select a patient from the list");
+    return;
+  }
+  let anotherDummyVar = {index: yetAnotherDummyVar.id}
+  const options = {
+      method: 'POST',
+      headers: {"content-type": "application/json"},
+      body: JSON.stringify(anotherDummyVar)
+  };
+
+  const response = await fetch("/unadmit", options);
+  const jsonData = await response.json();
+  submitResults.innerHTML = jsonData;
+  patient.value = "";
+  // get new updated patient list
+  document.getElementById("patients").remove(); 
+  getPatientlist(); 
+});
 
 function Status_Regions() {
   document.getElementById("h1").innerHTML = "Status";
@@ -321,6 +416,21 @@ function Status_Regions() {
   solve.style.display = "none";
   statistics.style.display = "block";
   submitResults.innerHTML = "";
+  unadmit.style.display = "none";
+  updateStats();
+}
+
+async function updateStats() {
+  const options = {
+      method: 'POST',
+      headers: {"content-type": "application/json"},
+      body: JSON.stringify()
+  };
+
+  const response = await fetch("/stats", options);
+  const jsonData = await response.json();
+  console.log(jsonData);
+  statistics.innerHTML = '<table><tr><th>Region</th><th>Beds</th><th>Staff</th><th>Equipment</th></tr><tr><th>1</th><th>' + jsonData.region1.Beds + '</th><th>' + jsonData.region1.Staff + '</th><th>' + jsonData.region1.Equipment + '</th></tr><tr><th>2</th><th>' + jsonData.region2.Beds + '</th><th>' + jsonData.region2.Staff + '</th><th>' + jsonData.region2.Equipment + '</th></tr><tr><th>3</th><th>' + jsonData.region3.Beds + '</th><th>' + jsonData.region3.Staff + '</th><th>' + jsonData.region3.Equipment + '</th></tr><tr><th>4</th><th>' + jsonData.region4.Beds + '</th><th>' + jsonData.region4.Staff + '</th><th>' + jsonData.region4.Equipment + '</th></tr><tr><th>5</th><th>' + jsonData.region5.Beds + '</th><th>' + jsonData.region5.Staff + '</th><th>' + jsonData.region5.Equipment + '</th></tr></table>';        
 }
 
 function Instructions() {
@@ -330,6 +440,7 @@ function Instructions() {
   solve.style.display = "none";
   statistics.style.display = "none";
   submitResults.innerHTML = "";
+  unadmit.style.display = "none";
 }
 
 function Contact() {
@@ -339,6 +450,7 @@ function Contact() {
   solve.style.display = "none";
   statistics.style.display = "none";
   submitResults.innerHTML = "";
+  unadmit.style.display = "none";
 }
 
 async function solverChange() {
