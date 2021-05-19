@@ -3,6 +3,7 @@
 <title>Pandemic program</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1/dist/chart.min.js"> </script>
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
@@ -183,8 +184,12 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
           
         </div>
         <br>
+        <div id="otherPatients">
+
+        </div>
+        <br>
         <div id="solve">
-          <p>Select which type of solver the system is using. Using solver 1 means patients can be moved more than once per week. If solver 2 is used, patients can only be moved between hospitals once a week.</p>
+          <p>Select which type of solver the system is using. Using solver 2 means patients can be moved more than once per week. If solver 1 is used, patients can only be moved between hospitals once a week.</p>
           <p><b id="solver">Currently in use: Solver <%= solver %></b></p> <a href="#" onclick="solverChange()">Change</a>
         </div>
         <div id="statistics">
@@ -207,26 +212,13 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
               <th><%= Staff %></th>
               <th><%= Equipment %></th>
             </tr>
-            <tr>
-              <th>3</th>
-              <th><%= Beds %></th>
-              <th><%= Staff %></th>
-              <th><%= Equipment %></th>
-            </tr>
-            <tr>
-              <th>4</th>
-              <th><%= Beds %></th>
-              <th><%= Staff %></th>
-              <th><%= Equipment %></th>
-            </tr>
-            <tr>
-              <th>5</th>
-              <th><%= Beds %></th>
-              <th><%= Staff %></th>
-              <th><%= Equipment %></th>
-            </tr>
           </table>
         </div>
+        <br>
+        <div id="canvasElement">
+        </div>
+
+
     </div>
     <div class="w3-third w3-container">
       <p class="w3-border w3-padding-large w3-padding-32 w3-center">No ads to look at here.</p>
@@ -245,7 +237,6 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
       <p class="w3-border w3-padding-large w3-padding-64 w3-center">AD</p>
     </div>
   </div>
-
   <div class="w3-row w3-padding-64">
     <div class="w3-twothird w3-container">
       <h1 class="w3-text-teal">Heading</h1>
@@ -270,12 +261,10 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
       <a class="w3-button w3-hover-black" href="#">»</a>
     </div>
   </div>
-
   <footer id="myFooter">
     <div class="w3-container w3-theme-l2 w3-padding-32">
       <h4>Footer</h4>
     </div>
-
     <div class="w3-container w3-theme-l1">
       <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
     </div>
@@ -287,10 +276,8 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
 <script>
 // Get the Sidebar
 var mySidebar = document.getElementById("mySidebar");
-
 // Get the DIV with overlay effect
 var overlayBg = document.getElementById("myOverlay");
-
 // Toggle between showing and hiding the sidebar, and add overlay effect
 function w3_open() {
   if (mySidebar.style.display === 'block') {
@@ -301,13 +288,11 @@ function w3_open() {
     overlayBg.style.display = "block";
   }
 }
-
 // Close the sidebar with the close button
 function w3_close() {
   mySidebar.style.display = "none";
   overlayBg.style.display = "none";
 }
-
 let pInput = document.getElementById("pInput");
 pInput.style.display = "none";
 let solve = document.getElementById("solve");
@@ -315,8 +300,10 @@ solve.style.display = "none";
 let statistics = document.getElementById("statistics");
 statistics.style.display = "none";
 let submitResults = document.getElementById("submitResult");
+let otherPatients = document.getElementById("otherPatients");
 let unadmit = document.getElementById("unadmit");
 unadmit.style.display = "none";
+let canvasElement = document.getElementById("canvasElement");
 
 function frontpage() {
   document.getElementById("h1").innerHTML = "Hospital Management";
@@ -327,6 +314,7 @@ function frontpage() {
   pInput.style.display = "none";
   solve.style.display = "none";
   statistics.style.display = "none";
+  canvasElement.style.display = "none"; 
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
 }
@@ -339,6 +327,7 @@ function Admit_Patient() {
   //pInput.type = "text";
   pInput.style.display = "block";
   solve.style.display = "block";
+  canvasElement.style.display = "none"; 
   statistics.style.display = "none";
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
@@ -350,6 +339,7 @@ function Unadmit_Patient() {
   pInput.style.display = "none";
   solve.style.display = "none";
   statistics.style.display = "none";
+  canvasElement.style.display = "none"; 
   submitResults.innerHTML = "";
   unadmit.style.display = "block";
   getPatientlist();
@@ -378,7 +368,7 @@ async function getPatientlist() {
   patientslist.id = 'patients';
   for (index in jsonData) {
     var option = document.createElement('option');
-    option.value = jsonData[index].name + ' grade: ' + jsonData[index].grade + ' region: ' +jsonData[index].region;
+    option.value = jsonData[index].Name + ' grade: ' + jsonData[index].grading + ' region: ' + jsonData[index].region;
     option.id = index;
     patientslist.appendChild(option);
   }
@@ -409,28 +399,76 @@ unadmit.addEventListener("submit", async (e) => {
   getPatientlist(); 
 });
 
+let canvas = document.createElement("CANVAS");
+  canvas.id = 'myChart';
+  canvas.width = '100';
+  canvas.height = '100';
+  canvasElement.append(canvas)
+  
+  DataObj = {Xdata: "", Ydata: []}
+
+  let Xvalues = ['Region 1 beds', 'Region 1 Admitted', 'Region 2 beds', 'Region 2 Admitted', 'Region 3 beds', 
+  'region 3 Admitted', 'Region 4 beds', 'region 4 Admitted', 'Region 5 beds', 'region 5 Admitted'];
+  DataObj.Xdata = Xvalues;
+
+  var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: DataObj.Xdata,
+        datasets: [{
+            label: '# beds available in region',
+            data: DataObj.Ydata,
+            backgroundColor: [ 'rgba(255, 99, 132, 0.2)' ],
+            borderColor: [ 'rgba(255, 99, 132, 1)'],
+            borderWidth: 1
+        }]
+    },
+});
+
+setInterval(updateGraph, 500);
+
+function updateGraph(){
+  removeData(myChart, DataObj.Ydata)
+  addData(myChart, DataObj.Ydata)
+}
+
 function Status_Regions() {
   document.getElementById("h1").innerHTML = "Status";
   document.getElementById("sub_text").innerHTML = "Functionality will follow";
   pInput.style.display = "none";
   solve.style.display = "none";
   statistics.style.display = "block";
+  canvasElement.style.display = "block";
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
   updateStats();
 }
-
 async function updateStats() {
   const options = {
       method: 'POST',
       headers: {"content-type": "application/json"},
       body: JSON.stringify()
   };
-
   const response = await fetch("/stats", options);
   const jsonData = await response.json();
-  console.log(jsonData);
-  statistics.innerHTML = '<table><tr><th>Region</th><th>Beds</th><th>Staff</th><th>Equipment</th></tr><tr><th>1</th><th>' + jsonData.region1.Beds + '</th><th>' + jsonData.region1.Staff + '</th><th>' + jsonData.region1.Equipment + '</th></tr><tr><th>2</th><th>' + jsonData.region2.Beds + '</th><th>' + jsonData.region2.Staff + '</th><th>' + jsonData.region2.Equipment + '</th></tr><tr><th>3</th><th>' + jsonData.region3.Beds + '</th><th>' + jsonData.region3.Staff + '</th><th>' + jsonData.region3.Equipment + '</th></tr><tr><th>4</th><th>' + jsonData.region4.Beds + '</th><th>' + jsonData.region4.Staff + '</th><th>' + jsonData.region4.Equipment + '</th></tr><tr><th>5</th><th>' + jsonData.region5.Beds + '</th><th>' + jsonData.region5.Staff + '</th><th>' + jsonData.region5.Equipment + '</th></tr></table>';        
+//  console.log(jsonData);
+  statistics.innerHTML = '<table><tr><th>Region</th><th>Beds</th><th>Admitted</th><th>Staff</th><th>Equipment</th></tr><tr><th>1</th><th>' + jsonData.region1.Beds + '</th><th>' + jsonData.region1.Admitted + '</th><th>' + jsonData.region1.Staff + '</th><th>' + jsonData.region1.Equipment + '</th></tr><tr><th>2</th><th>' + jsonData.region2.Beds + '</th><th>' + jsonData.region2.Admitted + '</th><th>' + jsonData.region2.Staff + '</th><th>' + jsonData.region2.Equipment + '</th></tr><tr><th>3</th><th>' + jsonData.region3.Beds + '</th><th>' + jsonData.region3.Admitted + '</th><th>' + jsonData.region3.Staff + '</th><th>' + jsonData.region3.Equipment + '</th></tr><tr><th>4</th><th>' + jsonData.region4.Beds + '</th><th>' + jsonData.region4.Admitted + '</th><th>' + jsonData.region4.Staff + '</th><th>' + jsonData.region4.Equipment + '</th></tr><tr><th>5</th><th>' + jsonData.region5.Beds + '</th><th>' + jsonData.region5.Admitted + '</th><th>' + jsonData.region5.Staff + '</th><th>' + jsonData.region5.Equipment + '</th></tr></table>';
+  let Yvalues = [jsonData.region1.Beds, jsonData.region1.Admitted, jsonData.region2.Beds, jsonData.region2.Admitted, jsonData.region3.Beds,
+  jsonData.region3.Admitted, jsonData.region4.Beds, jsonData.region4.Admitted, jsonData.region5.Beds, jsonData.region5.Admitted] 
+  DataObj = {Xvalues, Yvalues}
+  DataObj.Ydata = Yvalues;
+//  console.log(DataObj.Ydata)
+}
+
+function addData(myChart, Ydata) {
+    myChart.data.datasets[0].data = Ydata;
+  myChart.update(0);
+}
+
+function removeData(myChart, Ydata) {
+    myChart.data.datasets[0].data = [];
+  myChart.update(0);
 }
 
 function Instructions() {
@@ -439,6 +477,7 @@ function Instructions() {
   pInput.style.display = "none";
   solve.style.display = "none";
   statistics.style.display = "none";
+  canvasElement.style.display = "none"; 
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
 }
@@ -449,6 +488,7 @@ function Contact() {
   pInput.style.display = "none";
   solve.style.display = "none";
   statistics.style.display = "none";
+  canvasElement.style.display = "none"; 
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
 }
@@ -460,33 +500,27 @@ async function solverChange() {
       headers: {"content-type": "application/json"},
       body: JSON.stringify(solver)
   };
-
   const response = await fetch("/solver", options);
   const jsonData = await response.json();
-  console.log(jsonData);
   document.getElementById("solver").innerHTML = "Currently in use: Solver " + jsonData.solver;
 }
 
 pInput.addEventListener("submit", async (e) => {
   e.preventDefault();
-
   // Get Patient data for validation
   let Name = document.getElementById("pname");
   let Grading = document.getElementById("grading");
   let City = document.getElementById("city");
-
   // Validation of Name input - name cannot be number
   if (!isNaN(Name.value)) {
     alert("Please enter the patient's name");
     return;
   }
-
   // Validation of grading input
   if (Grading.value != 0 && Grading.value != 1 && Grading.value != 2 && Grading.value != 3) {
     alert("Please select an illness grade");
     return;
   }
-
   // Validatation of city input
   // If all inputs are of correct type, data will be submitted and the form is cleared
   let cities = document.getElementById("cities");
@@ -500,11 +534,18 @@ pInput.addEventListener("submit", async (e) => {
         headers: {"content-type": "application/json"},
         body: JSON.stringify(patientObj)
       };
-
       const response = await fetch("/api", options);
-      const jsonData = await response.json();
-      submitResults.innerHTML = "<b>Result: </b>Patient is to be submitted to " + jsonData.City;
-      console.log(jsonData);
+      let RPs = await response.json();
+      let NewPatient = GetIndex(iname, RPs)
+      let patientData = "";
+      for (index in RPs){
+        if (index != NewPatient)
+          patientData += "Patient " + RPs[index].Name + " is to be moved to region " + RPs[index].region;
+      }
+      submitResults.innerHTML = "<b>Result: </b>Patient " + RPs[NewPatient].Name + " is to be submitted to Region " + RPs[NewPatient].region;
+      if (patientData != undefined)
+        otherPatients.innerHTML = patientData;
+ //     console.log(RPs);
       Name.value = "";
       Grading.value = "-";
       City.value = "";
@@ -512,9 +553,15 @@ pInput.addEventListener("submit", async (e) => {
     }
   }
   alert("Please select a valid city");
+
+  function GetIndex(name, array){
+    for (index in array){
+      if (name == array[index].Name)
+      return index
+    }
+  }
   
 });
-
 </script>
 
 </body>
