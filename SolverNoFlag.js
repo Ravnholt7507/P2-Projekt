@@ -1,6 +1,6 @@
 let regions = require('./branch.js');
 let fs = require('fs');
-let HL = require('./solver3')
+let HL = require('./SolverFlag')
 
 let PH_array = [];
 
