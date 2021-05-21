@@ -236,7 +236,7 @@ span.psw {
 
 <div id="id01" class="modal">
   
-  <form class="modal-content animate" name="loginForm" action="/" onSubmit="return validateForm();" method="post" > <!--action="./loggedIn.html"  method="post" -->
+  <form class="modal-content animate" name="loginForm" action="/main" onSubmit="return validateForm();"> <!--action="./loggedIn.html"  method="post" -->
     <div class="imgcontainer">
       <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
       <img src="#" alt="Avatar" class="avatar" style="width:150px;height:150px;">
@@ -317,7 +317,7 @@ function validateForm() {
         var username = "username"; 
         var password = "password";
         if ((un == username) && (pw == password)) {
-            Succesfull_login();
+            //Succesfull_login();
             return true;
         }
         else {
@@ -326,6 +326,7 @@ function validateForm() {
         }
 }
 
+// function not in use
 function Succesfull_login() {
   modal.style.display = "none";
   //document.getElementById("h1").innerHTML = "Hospital Management";
