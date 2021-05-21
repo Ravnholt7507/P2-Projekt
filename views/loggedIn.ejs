@@ -312,7 +312,7 @@ async function getPatientlist() {
   patientslist.id = 'patients';
   for (index in jsonData) {
     var option = document.createElement('option');
-    option.value = jsonData[index].Name + ' grade: ' + jsonData[index].grading + ' region: ' + jsonData[index].region + ' ID: ' + jsonData[index].PID;
+    option.value = jsonData[index].Name + ' grade: ' + jsonData[index].grading + ' region: ' + jsonData[index].r+ ' ID: ' + jsonData[index].PID;
     option.id = index;
     patientslist.appendChild(option);
   }
@@ -349,10 +349,9 @@ let canvas = document.createElement("CANVAS");
   canvas.height = '100';
   canvasElement.append(canvas)
   
-  DataObj = {Xdata: "", Ydata: [2,0,2,0,2,0,2,0,2,0]}
+  DataObj = {Xdata: "", Ydata: {Beds: [2,2,2,2,2], Admitted: [0,0,0,0,0], eqp: [3,3,3,3,3]}}
 
-  let Xvalues = ['Region 1 beds', 'Region 1 Admitted', 'Region 2 beds', 'Region 2 Admitted', 'Region 3 beds', 
-  'region 3 Admitted', 'Region 4 beds', 'region 4 Admitted', 'Region 5 beds', 'region 5 Admitted'];
+  let Xvalues = ['Region Nordjylland', 'Region Midtjylland', 'Region Syddanmark', 'Region Sjælland', 'Region Hovedstad']
   DataObj.Xdata = Xvalues;
 
   var ctx = document.getElementById('myChart').getContext('2d');
@@ -361,10 +360,24 @@ let canvas = document.createElement("CANVAS");
     data: {
         labels: DataObj.Xdata,
         datasets: [{
-            label: '# beds available in region',
-            data: DataObj.Ydata,
-            backgroundColor: [ 'rgba(255, 99, 132, 0.2)' ],
-            borderColor: [ 'rgba(255, 99, 132, 1)'],
+            label: '# beds available in each region',
+            data: DataObj.Ydata.Beds,
+            backgroundColor: [ 'rgba(255, 99, 132, 0.5)' ],
+//            borderColor: [ 'rgba(255, 99, 132, 1)'],
+            borderWidth: 1
+        },
+        {
+            label: '# admitted in each region',
+            data: DataObj.Ydata.Admitted,
+            backgroundColor: [ 'rgba(127, 255, 212, 0.5)' ],
+//            borderColor: [ 'rgba(255, 99, 132, 1)'],
+            borderWidth: 1
+        },
+        {
+            label: '# of equipment left in each region',
+            data: DataObj.Ydata.eqp,
+            backgroundColor: [ 'rgba(100,149,237 0.5)' ],
+//            borderColor: [ 'rgba(255, 99, 132, 1)'],
             borderWidth: 1
         }]
     },
@@ -392,25 +405,24 @@ async function updateStats() {
   const jsonData = await response.json();
 //  console.log(jsonData);
   statistics.innerHTML = '<table><tr><th>Region</th><th>Beds</th><th>Admitted</th><th>Staff</th><th>Equipment</th></tr><tr><th>1</th><th>' + jsonData.region1.Beds + '</th><th>' + jsonData.region1.Admitted + '</th><th>' + jsonData.region1.Staff + '</th><th>' + jsonData.region1.Equipment + '</th></tr><tr><th>2</th><th>' + jsonData.region2.Beds + '</th><th>' + jsonData.region2.Admitted + '</th><th>' + jsonData.region2.Staff + '</th><th>' + jsonData.region2.Equipment + '</th></tr><tr><th>3</th><th>' + jsonData.region3.Beds + '</th><th>' + jsonData.region3.Admitted + '</th><th>' + jsonData.region3.Staff + '</th><th>' + jsonData.region3.Equipment + '</th></tr><tr><th>4</th><th>' + jsonData.region4.Beds + '</th><th>' + jsonData.region4.Admitted + '</th><th>' + jsonData.region4.Staff + '</th><th>' + jsonData.region4.Equipment + '</th></tr><tr><th>5</th><th>' + jsonData.region5.Beds + '</th><th>' + jsonData.region5.Admitted + '</th><th>' + jsonData.region5.Staff + '</th><th>' + jsonData.region5.Equipment + '</th></tr></table>';
-  let Yvalues = [jsonData.region1.Beds, jsonData.region1.Admitted, jsonData.region2.Beds, jsonData.region2.Admitted, jsonData.region3.Beds,
-  jsonData.region3.Admitted, jsonData.region4.Beds, jsonData.region4.Admitted, jsonData.region5.Beds, jsonData.region5.Admitted] 
+  let YBeds = [jsonData.region1.Beds,  jsonData.region2.Beds, jsonData.region3.Beds, jsonData.region4.Beds, jsonData.region5.Beds] 
+  let YAdmitted = [jsonData.region1.Admitted, jsonData.region2.Admitted, jsonData.region3.Admitted, jsonData.region5.Admitted]
+  let Yeqp = [jsonData.region1.Equipment, jsonData.region2.Equipment, jsonData.region3.Equipment, jsonData.region4.Equipment, jsonData.region5.Equipment]
 //  DataObj = {Xvalues, Yvalues}
-  DataObj.Ydata = Yvalues;
+  DataObj.Ydata.Beds = YBeds;
+  DataObj.Ydata.Admitted = YAdmitted;
+  DataObj.Ydata.eqp = Yeqp;
+
 //  console.log(DataObj.Ydata)
 addData(myChart, DataObj.Ydata)
 }
 
 function addData(myChart, Ydata) {
-    myChart.data.datasets[0].data[0] = Ydata[0]
-    myChart.data.datasets[0].data[1] = Ydata[1]
-    myChart.data.datasets[0].data[2] = Ydata[2]
-    myChart.data.datasets[0].data[3] = Ydata[3]
-    myChart.data.datasets[0].data[4] = Ydata[4]
-    myChart.data.datasets[0].data[5] = Ydata[5]
-    myChart.data.datasets[0].data[6] = Ydata[6]
-    myChart.data.datasets[0].data[7] = Ydata[7]
-    myChart.data.datasets[0].data[8] = Ydata[8]
-    myChart.data.datasets[0].data[9] = Ydata[9]
+  for(index in Ydata.Beds){
+    myChart.data.datasets[0].data[index] = Ydata.Beds[index]
+    myChart.data.datasets[1].data[index] = Ydata.Admitted[index]
+    myChart.data.datasets[2].data[index] = Ydata.eqp[index]
+  }
   myChart.update(0);
 }
 
@@ -506,7 +518,7 @@ pInput.addEventListener("submit", async (e) => {
         if (index != NewPatient)
           patientData += "Patient " + RPs[index].Name + " is to be moved to region " + RPs[index].region + " ";
       }
-      submitResults.innerHTML = "<b>Result: </b>Patient " + RPs[NewPatient].Name + " is to be submitted to Region " + RPs[NewPatient].region + " With ID " + RPs[NewPatient].PID;
+      submitResults.innerHTML = "<b>Result: </b>Patient " + RPs[NewPatient].Name + " is to be submitted to region " + RPs[NewPatient].region+ " With ID " + RPs[NewPatient].PID;
       if (patientData != undefined)
         otherPatients.innerHTML = patientData;
  //     console.log(RPs);
