@@ -48,8 +48,9 @@ app.get('/patients', (req, res) => {
 });
 
 app.post('/unadmit', (request, response) => {
-    console.log(request.body);
+    console.log(List[request.body.index]);
     response.json('Succesfully unadmitted '+ List[request.body.index].Name);
+    SolverFlag.HospitalTracker(List[request.body.index].region, List[request.body.index].grading, 1)
     List.splice(request.body.index, 1); // remove patient from list
     console.log(List); //test
 });
@@ -85,15 +86,38 @@ app.post('/solver', (req, res) => {
     }
 });
 
+
+// function DeleteFaultyPatientData(arr, List) {
+//     for(index in arr) {
+//       List.splice(arr[index], 1);
+//     }
+//   }
+
+// function unadmitPatient(PatientList) {
+//     let timeForUnadmitArr = [];
+    
+//       for(index in List) {
+//         if(List[index].PID + 15000 <= Date.now())
+//            timeForUnadmitArr.unshift(index); // unshift adds element to the front of array
+//     }
+//   DeleteFaultyPatientData(timeForUnadmitArr, List); // Reuse of delete function from validatePatientData
+// }
+
+// setInterval(unadmitPatient, 10000, List); 
+// setInterval( () => console.log(List), 10000); // Test
+
 app.post('/api', (request, response) => {
          console.log("I got a request!" + '\n' + 'Name: ' + request.body.iname + ' Grade: ' + request.body.igrade + ' City: ' + request.body.icity);
          const data = request.body;
      //    response.json({ status: "succes", Name: data.iname, Grade: data.igrade, City: data.icity})
-         let Patient = { Name: data.iname, grading: data.igrade, region: 0, flag: 0 }
+         let timestamp = Date.now();
+         let Patient = { Name: data.iname, grading: ((request.body.igrade == 0) ? 0 : ((request.body.igrade == 1) ? 1 : ((request.body.igrade == 2) ? 2 : 3))), region: 0, flag: 0, PID: timestamp}
+         validatePatientData(Patient);
          if (solver == 1){
            List = SolverFlag.BatchPatients(Patient, data.icity, List);
            response.json(SolverFlag.PH_array);
            SolverFlag.Delete_PH_array();
+           console.log(List)
          }
          else if (solver == 2){
            List = SolverNoFlag.BatchPatients(Patient, data.icity, List);
@@ -101,5 +125,34 @@ app.post('/api', (request, response) => {
            SolverNoFlag.Delete_PH_array();
          }
 });
+
+
+function validatePatientData(NewPatient) {
+      try {
+          if(nameValidation(NewPatient.Name) == false) throw "Patient name";
+          if(gradingValidation(NewPatient.grading) == false) throw "Patient grading";
+//          if(regionValidation(NewPatient.region) == false) throw "Patient region";
+      }
+      catch(err) {
+        let problem = 'Problem with patient ' + NewPatient + ' , specifically ' + err;
+        console.error(problem);
+        fs.appendFile('./Error.txt', problem + "\n", err => {
+          if(err) console.error("Error writing to Error.txt");
+        });
+    }
+}
+
+
+function nameValidation(Name) {
+  return isNaN(Name);
+}
+
+function gradingValidation(grading) {
+  return (grading == 0 || grading == 1 || grading == 2 || grading == 3);
+}
+
+// function regionValidation(region) {
+//   return (region == 0 || region == 1 || region == 2 || region == 3 || region == 4);
+// }
 
 app.listen(port);
