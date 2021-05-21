@@ -81,6 +81,8 @@ app.post('/solver', (req, res) => {
     if(data.change == "change") {
         solver = (solver % 2) + 1;
         res.json({ status: "Succes", solver: solver})
+    } else if(data.change == "false") {
+        res.json({ status: "Succes", solver: solver})
     } else {
         res.json({ status: "failure" })
     }
