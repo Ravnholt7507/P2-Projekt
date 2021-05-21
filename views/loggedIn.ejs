@@ -312,7 +312,7 @@ async function getPatientlist() {
   patientslist.id = 'patients';
   for (index in jsonData) {
     var option = document.createElement('option');
-    option.value = jsonData[index].Name + ' grade: ' + jsonData[index].grading + ' region: ' + jsonData[index].region;
+    option.value = jsonData[index].Name + ' grade: ' + jsonData[index].grading + ' region: ' + jsonData[index].region + ' ID: ' + jsonData[index].PID;
     option.id = index;
     patientslist.appendChild(option);
   }
