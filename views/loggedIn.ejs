@@ -20,20 +20,6 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
 </style>
 <body>
 
-<!-- Navbar 
-<div class="w3-top">
-  <div class="w3-bar w3-theme w3-top w3-left-align w3-large">
-    <a class="w3-bar-item w3-button w3-right w3-hide-large w3-hover-white w3-large w3-theme-l1" href="javascript:void(0)" onclick="w3_open()"><i class="fa fa-bars"></i></a>
-    <a href="#" class="w3-bar-item w3-button w3-theme-l1">Logo</a>
-    <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hover-white">About</a>
-    <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Values</a>
-    <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hover-white">News</a>
-    <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Contact</a>
-    <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hide-medium w3-hover-white">Clients</a>
-    <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hide-medium w3-hover-white">Partners</a>
-  </div>
-</div>
--->
 <!-- Sidebar -->
 <nav class="w3-sidebar w3-bar-block w3-collapse w3-large w3-theme-l5 w3-animate-left" id="mySidebar">
   <a href="javascript:void(0)" onclick="w3_close()" class="w3-right w3-xlarge w3-padding-large w3-hover-black w3-hide-large" title="Close Menu">
@@ -225,52 +211,7 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
       <p class="w3-border w3-padding-large w3-padding-64 w3-center">No ads to look at here.</p>
     </div>
   </div>
-<!--
-  <div class="w3-row">
-    <div class="w3-twothird w3-container">
-      <h1 class="w3-text-teal">Heading</h1>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum
-        dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-    </div>
-    <div class="w3-third w3-container">
-      <p class="w3-border w3-padding-large w3-padding-32 w3-center">AD</p>
-      <p class="w3-border w3-padding-large w3-padding-64 w3-center">AD</p>
-    </div>
-  </div>
-  <div class="w3-row w3-padding-64">
-    <div class="w3-twothird w3-container">
-      <h1 class="w3-text-teal">Heading</h1>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum
-        dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-    </div>
-    <div class="w3-third w3-container">
-      <p class="w3-border w3-padding-large w3-padding-32 w3-center">AD</p>
-      <p class="w3-border w3-padding-large w3-padding-64 w3-center">AD</p>
-    </div>
-  </div>
--->
 
-  <!-- Pagination 
-  <div class="w3-center w3-padding-32">
-    <div class="w3-bar">
-      <a class="w3-button w3-black" href="#">1</a>
-      <a class="w3-button w3-hover-black" href="#">2</a>
-      <a class="w3-button w3-hover-black" href="#">3</a>
-      <a class="w3-button w3-hover-black" href="#">4</a>
-      <a class="w3-button w3-hover-black" href="#">5</a>
-      <a class="w3-button w3-hover-black" href="#">»</a>
-    </div>
-  </div>
-  <footer id="myFooter">
-    <div class="w3-container w3-theme-l2 w3-padding-32">
-      <h4>Footer</h4>
-    </div>
-    <div class="w3-container w3-theme-l1">
-      <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
-    </div>
-  </footer>
---> 
-<!-- END MAIN -->
 </div>
 
 <script>
@@ -304,6 +245,8 @@ let otherPatients = document.getElementById("otherPatients");
 let unadmit = document.getElementById("unadmit");
 unadmit.style.display = "none";
 let canvasElement = document.getElementById("canvasElement");
+canvasElement.style.display = "none";
+otherPatients.style.display = "none"
 
 function frontpage() {
   document.getElementById("h1").innerHTML = "Hospital Management";
@@ -317,6 +260,7 @@ function frontpage() {
   canvasElement.style.display = "none"; 
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
+  otherPatients.style.display = "none"
 }
 
 function Admit_Patient() {
@@ -329,6 +273,7 @@ function Admit_Patient() {
   solve.style.display = "block";
   canvasElement.style.display = "none"; 
   statistics.style.display = "none";
+  otherPatients.style.display = "block";
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
 }
@@ -340,8 +285,14 @@ function Unadmit_Patient() {
   solve.style.display = "none";
   statistics.style.display = "none";
   canvasElement.style.display = "none"; 
+  otherPatients.style.display = "none"
   submitResults.innerHTML = "";
   unadmit.style.display = "block";
+  try {
+    document.getElementById('patients').remove();
+  } catch {
+    console.log("Its fine");
+  }
   getPatientlist();
 }
 
@@ -356,14 +307,6 @@ async function getPatientlist() {
   const jsonData = await response.json();
   console.log(jsonData); //test
   console.log(jsonData.length); //test
-  // let patientlist = document.getElementById("patients");
-  // patientlist.innerhtml = '<datalist id="patients">';
-  // let dummyvar = '';
-  // for(index in jsonData) {
-  //   console.log(jsonData[index].name);
-  //   dummyvar += '<option value="' + jsonData[index].name + ', grade: ' + jsonData[index].grade + ', region: ' + jsonData[index].region + '>';
-  // }
-  // patientlist.innerhtml = '<datalist id="patients">'+ dummyvar + '</datalist>';  
   patientslist = document.createElement('datalist');
   patientslist.id = 'patients';
   for (index in jsonData) {
@@ -405,7 +348,7 @@ let canvas = document.createElement("CANVAS");
   canvas.height = '100';
   canvasElement.append(canvas)
   
-  DataObj = {Xdata: "", Ydata: []}
+  DataObj = {Xdata: "", Ydata: [2,0,2,0,2,0,2,0,2,0]}
 
   let Xvalues = ['Region 1 beds', 'Region 1 Admitted', 'Region 2 beds', 'Region 2 Admitted', 'Region 3 beds', 
   'region 3 Admitted', 'Region 4 beds', 'region 4 Admitted', 'Region 5 beds', 'region 5 Admitted'];
@@ -426,13 +369,6 @@ let canvas = document.createElement("CANVAS");
     },
 });
 
-setInterval(updateGraph, 500);
-
-function updateGraph(){
-  removeData(myChart, DataObj.Ydata)
-  addData(myChart, DataObj.Ydata)
-}
-
 function Status_Regions() {
   document.getElementById("h1").innerHTML = "Status";
   document.getElementById("sub_text").innerHTML = "Functionality will follow";
@@ -442,6 +378,7 @@ function Status_Regions() {
   canvasElement.style.display = "block";
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
+  otherPatients.style.display = "none"
   updateStats();
 }
 async function updateStats() {
@@ -456,13 +393,23 @@ async function updateStats() {
   statistics.innerHTML = '<table><tr><th>Region</th><th>Beds</th><th>Admitted</th><th>Staff</th><th>Equipment</th></tr><tr><th>1</th><th>' + jsonData.region1.Beds + '</th><th>' + jsonData.region1.Admitted + '</th><th>' + jsonData.region1.Staff + '</th><th>' + jsonData.region1.Equipment + '</th></tr><tr><th>2</th><th>' + jsonData.region2.Beds + '</th><th>' + jsonData.region2.Admitted + '</th><th>' + jsonData.region2.Staff + '</th><th>' + jsonData.region2.Equipment + '</th></tr><tr><th>3</th><th>' + jsonData.region3.Beds + '</th><th>' + jsonData.region3.Admitted + '</th><th>' + jsonData.region3.Staff + '</th><th>' + jsonData.region3.Equipment + '</th></tr><tr><th>4</th><th>' + jsonData.region4.Beds + '</th><th>' + jsonData.region4.Admitted + '</th><th>' + jsonData.region4.Staff + '</th><th>' + jsonData.region4.Equipment + '</th></tr><tr><th>5</th><th>' + jsonData.region5.Beds + '</th><th>' + jsonData.region5.Admitted + '</th><th>' + jsonData.region5.Staff + '</th><th>' + jsonData.region5.Equipment + '</th></tr></table>';
   let Yvalues = [jsonData.region1.Beds, jsonData.region1.Admitted, jsonData.region2.Beds, jsonData.region2.Admitted, jsonData.region3.Beds,
   jsonData.region3.Admitted, jsonData.region4.Beds, jsonData.region4.Admitted, jsonData.region5.Beds, jsonData.region5.Admitted] 
-  DataObj = {Xvalues, Yvalues}
+//  DataObj = {Xvalues, Yvalues}
   DataObj.Ydata = Yvalues;
 //  console.log(DataObj.Ydata)
+addData(myChart, DataObj.Ydata)
 }
 
 function addData(myChart, Ydata) {
-    myChart.data.datasets[0].data = Ydata;
+    myChart.data.datasets[0].data[0] = Ydata[0]
+    myChart.data.datasets[0].data[1] = Ydata[1]
+    myChart.data.datasets[0].data[2] = Ydata[2]
+    myChart.data.datasets[0].data[3] = Ydata[3]
+    myChart.data.datasets[0].data[4] = Ydata[4]
+    myChart.data.datasets[0].data[5] = Ydata[5]
+    myChart.data.datasets[0].data[6] = Ydata[6]
+    myChart.data.datasets[0].data[7] = Ydata[7]
+    myChart.data.datasets[0].data[8] = Ydata[8]
+    myChart.data.datasets[0].data[9] = Ydata[9]
   myChart.update(0);
 }
 
@@ -478,6 +425,7 @@ function Instructions() {
   solve.style.display = "none";
   statistics.style.display = "none";
   canvasElement.style.display = "none"; 
+  otherPatients.style.display = "none"
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
 }
@@ -489,6 +437,7 @@ function Contact() {
   solve.style.display = "none";
   statistics.style.display = "none";
   canvasElement.style.display = "none"; 
+  otherPatients.style.display = "none"
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
 }
@@ -540,9 +489,9 @@ pInput.addEventListener("submit", async (e) => {
       let patientData = "";
       for (index in RPs){
         if (index != NewPatient)
-          patientData += "Patient " + RPs[index].Name + " is to be moved to region " + RPs[index].region;
+          patientData += "Patient " + RPs[index].Name + " is to be moved to region " + RPs[index].region + " ";
       }
-      submitResults.innerHTML = "<b>Result: </b>Patient " + RPs[NewPatient].Name + " is to be submitted to Region " + RPs[NewPatient].region;
+      submitResults.innerHTML = "<b>Result: </b>Patient " + RPs[NewPatient].Name + " is to be submitted to Region " + RPs[NewPatient].region + " With ID " + RPs[NewPatient].PID;
       if (patientData != undefined)
         otherPatients.innerHTML = patientData;
  //     console.log(RPs);
