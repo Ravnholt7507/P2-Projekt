@@ -276,6 +276,7 @@ function Admit_Patient() {
   otherPatients.style.display = "block";
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
+  solverChecker();
 }
 
 function Unadmit_Patient() {
@@ -440,6 +441,20 @@ function Contact() {
   otherPatients.style.display = "none"
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
+}
+
+async function solverChecker() {
+  const data = {change: "false"}
+  const options = {
+      method: 'POST',
+      headers: {"content-type": "application/json"},
+      body: JSON.stringify(data)
+  };
+
+  const response = await fetch("/solver", options);
+  const jsonData = await response.json();
+  console.log(jsonData);
+  document.getElementById("solver").innerHTML = "Currently in use: Solver " + jsonData.solver;
 }
 
 async function solverChange() {
