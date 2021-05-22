@@ -20,7 +20,7 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
 </style>
 <body>
 
-<!-- Sidebar -->
+<!-- Sidebar for navigating the subpages -->
 <nav class="w3-sidebar w3-bar-block w3-collapse w3-large w3-theme-l5 w3-animate-left" id="mySidebar">
   <a href="javascript:void(0)" onclick="w3_close()" class="w3-right w3-xlarge w3-padding-large w3-hover-black w3-hide-large" title="Close Menu">
     <i class="fa fa-remove"></i>
@@ -41,8 +41,13 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
 
   <div class="w3-row w3-padding-64">
     <div class="w3-twothird w3-container" id="frontpage">
+
+      <!-- Front page text. Changes when user navigates to subpages -->
         <h1 class="w3-text-teal" id="h1">Hospital Management</h1>
         <p id = "sub_text"> Manage Patients.</p>
+        
+        <!-- Form for submitting patients. Includes field for Patient name, drop down selection menu for grade, 
+        and search with autocomplete for patient city. Will only be visible when user navigates to the subpage "admit patients" -->
         <form class="Patientinput" action="/" id="pInput" type="hidden" method="POST">
           <label for="fname">Patient name:</label><br>
           <input type="text" id="pname" name="name" value="" required><br>
@@ -159,6 +164,27 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
           <input type="submit" value="Admit">
         </form>
         <br>
+
+        <!-- Field where the result of submitting a patient will appear -->
+        <div id="submitResult">
+          
+        </div>
+
+        <!--  Field where data about other patients who might need to be moved as a result of submitting a patient will appear -->
+        <br>
+        <div id="otherPatients">
+
+        </div>
+
+        <br>
+        <!-- Section where user can see which solver is currently in use, while having the ability to switch between them. -->
+        <div id="solve">
+          <p>Select which type of solver the system is using. Using solver 2 means patients can be moved more than once per week. If solver 1 is used, patients can only be moved between hospitals once a week.</p>
+          <p><b id="solver"> </b></p> <a href="#" onclick="solverChange()">Change</a>
+        </div>
+
+        <!-- Form for searching for patients with the intent to unadmit them. This form will only appear 
+        when the user navigates to the unadmit subpage. -->
         <div id="unadmit">
           <form>
             <label for="search">Search</label>
@@ -166,41 +192,14 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
             <button type="submit">Unadmit</button>
           </form>
         </div><br>
-        <div id="submitResult">
-          
-        </div>
-        <br>
-        <div id="otherPatients">
 
-        </div>
-        <br>
-        <div id="solve">
-          <p>Select which type of solver the system is using. Using solver 2 means patients can be moved more than once per week. If solver 1 is used, patients can only be moved between hospitals once a week.</p>
-          <p><b id="solver">Currently in use: Solver <%= solver %></b></p> <a href="#" onclick="solverChange()">Change</a>
-        </div>
+        <!-- Section where statistics about how many bed spaces and equipment are being used in each region will appear. 
+        Only visible when user navigates to the statistics subpage. -->
         <div id="statistics">
-          <table>
-            <tr>
-              <th>Region</th>
-              <th>Beds</th>
-              <th>Staff</th>
-              <th>Equipment</th>
-            </tr>
-            <tr>
-              <th>1</th>
-              <th><%= Beds %></th>
-              <th><%= Staff %></th>
-              <th><%= Equipment %></th>
-            </tr>
-            <tr>
-              <th>2</th>
-              <th><%= Beds %></th>
-              <th><%= Staff %></th>
-              <th><%= Equipment %></th>
-            </tr>
-          </table>
         </div>
         <br>
+
+        <!-- Section where a visual diagram about the statistics will appear. -->
         <div id="canvasElement">
         </div>
 
@@ -234,6 +233,8 @@ function w3_close() {
   mySidebar.style.display = "none";
   overlayBg.style.display = "none";
 }
+
+// Getting the different sections in the page, such that whether they are visible or not can be controlled using JS
 let pInput = document.getElementById("pInput");
 pInput.style.display = "none";
 let solve = document.getElementById("solve");
@@ -248,12 +249,11 @@ let canvasElement = document.getElementById("canvasElement");
 canvasElement.style.display = "none";
 otherPatients.style.display = "none"
 
+
+// Function that controls what is visible when user navigates to front page
 function frontpage() {
   document.getElementById("h1").innerHTML = "Hospital Management";
   document.getElementById("sub_text").innerHTML = "Manage Patients."; 
-  //document.getElementById("sub_text").children = 0; //'<p id = "sub_text"> Manage Patients.</p>'
-  //document.getElementById("frontpage") = '<div class="w3-twothird w3-container"><h1 class="w3-text-teal" id="h1">Hospital Management</h1><p id = "sub_text"> Manage Patients.</p></div>';
-  //delete document.getElementById("Patientinput");
   pInput.style.display = "none";
   solve.style.display = "none";
   statistics.style.display = "none";
@@ -263,12 +263,10 @@ function frontpage() {
   otherPatients.style.display = "none"
 }
 
+// Function that controls what is visible when user navigates to admit patients subpage
 function Admit_Patient() {
   document.getElementById("h1").innerHTML = "Admit Patients";
   document.getElementById("sub_text").innerHTML = "Here you can admit patients. Please fill out the input fields below to admit a patient:";
-  //let fields =  '<form class="Patientinput" action="/"><label for="fname">Patient name:</label><br><input type="text" id="pname" name="name"><br><label for="Grading">Grading:</label><br><input type="text" id="grading" name="Grading"><br><label for="City">City:</label><br><input type="text" id="city" name="City"><br><br><input type="submit" value="Submit"></form> ';
-  //document.getElementById("sub_text").outerHTML += fields;
-  //pInput.type = "text";
   pInput.style.display = "block";
   solve.style.display = "block";
   canvasElement.style.display = "none"; 
@@ -279,6 +277,7 @@ function Admit_Patient() {
   solverChecker();
 }
 
+// Function that controls what is visible when user navigates to unadmit patients subpage
 function Unadmit_Patient() {
   document.getElementById("h1").innerHTML = "Unadmit Patients";
   document.getElementById("sub_text").innerHTML = "Here patients can be unadmitted. Type in a name to search for a patient: ";
@@ -297,13 +296,13 @@ function Unadmit_Patient() {
   getPatientlist();
 }
 
+// Function that sents request to server and gets the list of all admitted patients to be used in unadmit subpage
 async function getPatientlist() {
   const options = {
       method: 'POST',
       headers: {"content-type": "application/json"},
       body: JSON.stringify()
   };
-
   const response = await fetch("/patients", options);
   const jsonData = await response.json();
   console.log(jsonData); //test
@@ -319,21 +318,21 @@ async function getPatientlist() {
   unadmit.appendChild(patientslist);
 }
 
+// Function that finds the patient from the list to be unsubmitted. Send data to server for unsubmission. 
 unadmit.addEventListener("submit", async (e) => {
   e.preventDefault();
   let patient = document.getElementById("Search");
-  let yetAnotherDummyVar = document.querySelector('option[value="' + patient.value + '"]');
-  if (yetAnotherDummyVar == null) {
+  let doesPatientExist = document.querySelector('option[value="' + patient.value + '"]');
+  if (doesPatientExist == null) {
     alert("Please select a patient from the list");
     return;
   }
-  let anotherDummyVar = {index: yetAnotherDummyVar.id}
+  let unsubmitData = {index: doesPatientExist.id}
   const options = {
       method: 'POST',
       headers: {"content-type": "application/json"},
-      body: JSON.stringify(anotherDummyVar)
+      body: JSON.stringify(unsubmitData)
   };
-
   const response = await fetch("/unadmit", options);
   const jsonData = await response.json();
   submitResults.innerHTML = jsonData;
@@ -343,6 +342,7 @@ unadmit.addEventListener("submit", async (e) => {
   getPatientlist(); 
 });
 
+// Code for creating the graph for the statistics
 let canvas = document.createElement("CANVAS");
   canvas.id = 'myChart';
   canvas.width = '100';
@@ -350,10 +350,8 @@ let canvas = document.createElement("CANVAS");
   canvasElement.append(canvas)
   
   DataObj = {Xdata: "", Ydata: {Beds: [2,2,2,2,2], Admitted: [0,0,0,0,0], eqp: [3,3,3,3,3]}}
-
   let Xvalues = ['Region Nordjylland', 'Region Midtjylland', 'Region Syddanmark', 'Region Sjælland', 'Region Hovedstad']
   DataObj.Xdata = Xvalues;
-
   var ctx = document.getElementById('myChart').getContext('2d');
     var myChart = new Chart(ctx, {
     type: 'bar',
@@ -383,9 +381,10 @@ let canvas = document.createElement("CANVAS");
     },
 });
 
+// Function that controls what is visible when user navigates to statistics subpage
 function Status_Regions() {
   document.getElementById("h1").innerHTML = "Status";
-  document.getElementById("sub_text").innerHTML = "Functionality will follow";
+  document.getElementById("sub_text").innerHTML = "Statistics about current hospital capacity can be seen here";
   pInput.style.display = "none";
   solve.style.display = "none";
   statistics.style.display = "block";
@@ -395,6 +394,8 @@ function Status_Regions() {
   otherPatients.style.display = "none"
   updateStats();
 }
+
+// Function for getting the statistics about hospital capacity from the server. 
 async function updateStats() {
   const options = {
       method: 'POST',
@@ -403,7 +404,6 @@ async function updateStats() {
   };
   const response = await fetch("/stats", options);
   const jsonData = await response.json();
-//  console.log(jsonData);
   statistics.innerHTML = '<table><tr><th>Region</th><th>Beds</th><th>Admitted</th><th>Staff</th><th>Equipment</th></tr><tr><th>1</th><th>' + jsonData.region1.Beds + '</th><th>' + jsonData.region1.Admitted + '</th><th>' + jsonData.region1.Staff + '</th><th>' + jsonData.region1.Equipment + '</th></tr><tr><th>2</th><th>' + jsonData.region2.Beds + '</th><th>' + jsonData.region2.Admitted + '</th><th>' + jsonData.region2.Staff + '</th><th>' + jsonData.region2.Equipment + '</th></tr><tr><th>3</th><th>' + jsonData.region3.Beds + '</th><th>' + jsonData.region3.Admitted + '</th><th>' + jsonData.region3.Staff + '</th><th>' + jsonData.region3.Equipment + '</th></tr><tr><th>4</th><th>' + jsonData.region4.Beds + '</th><th>' + jsonData.region4.Admitted + '</th><th>' + jsonData.region4.Staff + '</th><th>' + jsonData.region4.Equipment + '</th></tr><tr><th>5</th><th>' + jsonData.region5.Beds + '</th><th>' + jsonData.region5.Admitted + '</th><th>' + jsonData.region5.Staff + '</th><th>' + jsonData.region5.Equipment + '</th></tr></table>';
   let YBeds = [jsonData.region1.Beds,  jsonData.region2.Beds, jsonData.region3.Beds, jsonData.region4.Beds, jsonData.region5.Beds] 
   let YAdmitted = [jsonData.region1.Admitted, jsonData.region2.Admitted, jsonData.region3.Admitted, jsonData.region5.Admitted]
@@ -412,11 +412,9 @@ async function updateStats() {
   DataObj.Ydata.Beds = YBeds;
   DataObj.Ydata.Admitted = YAdmitted;
   DataObj.Ydata.eqp = Yeqp;
-
 //  console.log(DataObj.Ydata)
 addData(myChart, DataObj.Ydata)
 }
-
 function addData(myChart, Ydata) {
   for(index in Ydata.Beds){
     myChart.data.datasets[0].data[index] = Ydata.Beds[index]
@@ -425,15 +423,15 @@ function addData(myChart, Ydata) {
   }
   myChart.update(0);
 }
-
 function removeData(myChart, Ydata) {
     myChart.data.datasets[0].data = [];
   myChart.update(0);
 }
 
+// Function that controls what is visible when user navigates to instructions subpage
 function Instructions() {
   document.getElementById("h1").innerHTML = "Instructions";
-  document.getElementById("sub_text").innerHTML = "Instructions will follow.";
+  document.getElementById("sub_text").innerHTML = "<h1>How to use site</h1> Head to the admit patients section in order to admit a patient. The section also lets you choose which solver gets used for determining where a patient gets submitted. For unadmitting a patient, head to the unadmit patients section and start searching for the patient that is to be unsubmitted. For simply checking how much hospital capacity is left, head to the status of regions section. ";
   pInput.style.display = "none";
   solve.style.display = "none";
   statistics.style.display = "none";
@@ -443,6 +441,7 @@ function Instructions() {
   unadmit.style.display = "none";
 }
 
+// Function that controls what is visible when user navigates to contact subpage
 function Contact() {
   document.getElementById("h1").innerHTML = "Contact";
   document.getElementById("sub_text").innerHTML = "A link to our <a href='https://github.com/Ravnholt7507/P2-Projekt/'>github</a>.";
@@ -455,6 +454,7 @@ function Contact() {
   unadmit.style.display = "none";
 }
 
+// Function that gets data from server about which solver is currently is use.
 async function solverChecker() {
   const data = {change: "false"}
   const options = {
@@ -462,13 +462,13 @@ async function solverChecker() {
       headers: {"content-type": "application/json"},
       body: JSON.stringify(data)
   };
-
   const response = await fetch("/solver", options);
   const jsonData = await response.json();
   console.log(jsonData);
   document.getElementById("solver").innerHTML = "Currently in use: Solver " + jsonData.solver;
 }
 
+// Function that sends request to server for changing which solver that is being used.
 async function solverChange() {
   const solver = {change: "change"};
   const options = {
@@ -481,6 +481,7 @@ async function solverChange() {
   document.getElementById("solver").innerHTML = "Currently in use: Solver " + jsonData.solver;
 }
 
+// Function that sends data to the server for submitting a patient. Includes client side validation of data types. 
 pInput.addEventListener("submit", async (e) => {
   e.preventDefault();
   // Get Patient data for validation
@@ -529,7 +530,6 @@ pInput.addEventListener("submit", async (e) => {
     }
   }
   alert("Please select a valid city");
-
   function GetIndex(name, array){
     for (index in array){
       if (name == array[index].Name)
