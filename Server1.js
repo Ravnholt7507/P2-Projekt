@@ -1,3 +1,4 @@
+// Importing pakages and other files for functionality
 const express = require('express');
 const ejs = require('ejs');
 const app = express();
@@ -5,6 +6,8 @@ const SolverFlag = require('./SolverFlag')
 const SolverNoFlag = require('./SolverNoFlag') 
 const branch = require('./branch')
 //const fs = require('fs');
+
+// Port for the server to listen on
 const port = 3000;
 
 // let HList = SolverFlag.HospitalList
@@ -14,10 +17,9 @@ var List = [];
 
 app.set('view-engine', 'ejs');
 app.use(express.json());
-//app.use(express.urlencoded({ extended: false }));
 
 app.get('/main', (req, res) => {
-    res.render('loggedIn.ejs', {solver: solver, Beds: 1, Staff: 2, Equipment: 1});
+    res.render('loggedIn.ejs');
 });
 
 app.get('/', (req, res) => {
@@ -28,17 +30,7 @@ app.get('/login', (req, res) => {
     res.redirect('/');
 });
 
-app.post('/login', (request, response) => {
-    const data = request.body;
-    console.log(data);
-    if ((data.un == "username") && (data.pw == "password")) {
-        response.json({status: "succes"});
-        response.redirect('/main');
-    } else {
-        response.json({status: "failure"});
-    }
-});
-
+// Functionality to send the list of all admitted patients to the client
 app.post('/patients', (request, response) => {
     response.json(List);
 });
@@ -47,6 +39,7 @@ app.get('/patients', (req, res) => {
     res.redirect('/main');
 });
 
+// Functionality for when clients requests to unsubmit a patient
 app.post('/unadmit', (request, response) => {
     console.log(List[request.body.index]);
     response.json('Succesfully unadmitted '+ List[request.body.index].Name);
@@ -59,6 +52,7 @@ app.get('/unadmit', (req, res) => {
     res.redirect('/main');
 });
 
+// Functionality for sending statistics about current hospital capacity to client
 app.post('/stats', (req, res) => {
     let Stats = {
         region1 : {Beds: SolverFlag.HospitalList[0].Beds, Staff: SolverFlag.HospitalList[0].staff, Equipment: SolverFlag.HospitalList[0].eqp, Admitted: SolverFlag.HospitalList[0].admitted},
@@ -75,6 +69,7 @@ app.get('/stats', (req, res) => {
     res.redirect('/main');
 });
 
+// Functionality for when client requests to change the solver that is being used
 app.post('/solver', (req, res) => {
     const data = req.body;
     console.log(req.body);
@@ -108,6 +103,8 @@ app.post('/solver', (req, res) => {
 // setInterval(unadmitPatient, 10000, List); 
 // setInterval( () => console.log(List), 10000); // Test
 
+
+// Functionality for when client is submitting a patient
 app.post('/api', (request, response) => {
          console.log("I got a request!" + '\n' + 'Name: ' + request.body.iname + ' Grade: ' + request.body.igrade + ' City: ' + request.body.icity);
          const data = request.body;
