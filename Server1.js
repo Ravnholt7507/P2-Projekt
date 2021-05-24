@@ -5,15 +5,17 @@ const app = express();
 const SolverFlag = require('./SolverFlag')
 const SolverNoFlag = require('./SolverNoFlag') 
 const branch = require('./branch')
-//const fs = require('fs');
+const fs = require('fs')
 
 // Port for the server to listen on
 const port = 3000;
 
 // let HList = SolverFlag.HospitalList
 // console.log(HList)
-var solver = 1;
-var List = [];
+let solver = 1;
+let List = [];
+
+List = JSON.parse(fs.readFileSync('PatientList.json').toString().split('\r\n'));
 
 app.set('view-engine', 'ejs');
 app.use(express.json());
@@ -114,6 +116,13 @@ app.post('/api', (request, response) => {
          validatePatientData(Patient);
          if (solver == 1){
            List = SolverFlag.BatchPatients(Patient, data.icity, List);
+
+           let JsonList = JSON.stringify(List);
+
+           fs.writeFileSync('PatientList.json', JsonList, (err) => {
+             if (err)
+               throw err;
+           });
            response.json(SolverFlag.PH_array);
            SolverFlag.Delete_PH_array();
            console.log(List)
