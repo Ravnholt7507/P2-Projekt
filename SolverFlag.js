@@ -1,14 +1,14 @@
 let regions = require('./branch.js');
- let fs = require('fs');
+let fs = require('fs');
 
 let PH_array = [];
 
 let HospitalList = [0,0,0,0,0];
-HospitalList[0] = {ID: 0, Region: 0, Navn: 'UniversetsHospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300, staff: 2}
-HospitalList[1] = {ID: 1, Region: 1, Navn: 'Midt Hospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300, staff: 2}
-HospitalList[2] = {ID: 2, Region: 2, Navn: 'Odense Hospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300, staff: 2}
-HospitalList[3] = {ID: 3, Region: 3, Navn: 'Sjalland Hospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300, staff: 2}
-HospitalList[4] = {ID: 4, Region: 4, Navn: 'Koebenhavn Hospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300, staff: 2}
+HospitalList[0] = {ID: 0, Region: 0, Navn: 'UniversetsHospital', Address: 'Example', Beds: 10, admitted: 0, eqp: 5, staff: 2}
+HospitalList[1] = {ID: 1, Region: 1, Navn: 'Midt Hospital', Address: 'Example', Beds: 10, admitted: 0, eqp: 5, staff: 2}
+HospitalList[2] = {ID: 2, Region: 2, Navn: 'Odense Hospital', Address: 'Example', Beds: 10, admitted: 0, eqp: 5, staff: 2}
+HospitalList[3] = {ID: 3, Region: 3, Navn: 'Sjalland Hospital', Address: 'Example', Beds: 10, admitted: 0, eqp: 5, staff: 2}
+HospitalList[4] = {ID: 4, Region: 4, Navn: 'Koebenhavn Hospital', Address: 'Example', Beds: 10, admitted: 0, eqp: 5, staff: 2}
 
 let TravelTimeList = [];
 TravelTimeList[0] = {from_region: 0, To_region: 0, min: 0}
@@ -36,45 +36,6 @@ TravelTimeList[21] = {from_region: 4, To_region: 1, min: 3}
 TravelTimeList[22] = {from_region: 4, To_region: 2, min: 2}
 TravelTimeList[23] = {from_region: 4, To_region: 3, min: 1}
 TravelTimeList[24] = {from_region: 4, To_region: 4, min: 0}
-
-// function validatePatientData(NameArr) {
-//   let DataErrorArr = [];
-//   for(index in NameArr) {
-//       try {
-//           if(nameValidation(NameArr[index]) == false) throw "Patient name";
-//           if(gradingValidation(GradingArr[index]) == false) throw "Patient grading";
-//           if(regionValidation(regions.gradeList[index]) == false) throw "Patient region";
-//       }
-//       catch(err) {
-//         let problem = 'Problem with patientlist[' + index + '] data, specifically ' + err;
-//         console.error(problem);
-//         DataErrorArr.unshift(index); // unshift adds element to the front of array
-//         fs.appendFile('./Error.txt', problem + "\n", err => {
-//           if(err) console.error("Error writing to Error.txt");
-//         });
-//       }
-//   }
-//   DeleteFaultyPatientData(DataErrorArr);
-// }
-// validatePatientData(NameArr)
-
-// function nameValidation(Name) {
-//   return isNaN(Name);
-// }
-
-// function gradingValidation(grading) {
-//   return (grading == 0 || grading == 1 || grading == 2 || grading == 3);
-// }
-
-// function regionValidation(region) {
-//   return (region == 0 || region == 1 || region == 2 || region == 3 || region == 4);
-// }
-
-// function DeleteFaultyPatientData(arr) {
-//   for(index in arr) {
-//     PatientList.splice(arr[index], 1);
-//   }
-// }
 
 //Checks capacity in hospital
 function crowdedness(beds){
@@ -140,66 +101,81 @@ function findPatient(Region, grading, New_Patient_List){
 function Admit(patientObj, New_Patient_List){
   let patientGrade = patientObj.grading;
   let patientRegion = patientObj.region;
+
   let NewRegion = travel_Hospital(patientRegion, patientGrade)
   patientObj.region = NewRegion;
-  
   // If patient can be replaced with other patient -> find other patient's index.
-  let ReplaceInHospital = TryReplace(patientRegion, patientGrade, patientObj.flag, New_Patient_List);
-  if((ReplaceInHospital != "no") && (ReplaceInHospital < 5) && (ReplaceInHospital >= 0)){
-    let patientIndex = findPatient(ReplaceInHospital, LowestGradePatient(ReplaceInHospital, New_Patient_List), New_Patient_List)
+
+  let ReplacedPatient = TryReplace(patientRegion, patientGrade, New_Patient_List);
+  //Should return patient object, så sætter jeg ReplaceInHospital til dens region property, 
+  //Sætter bageefter ellers mangler koden bare at blive kommenteret 
+  if(ReplacedPatient != false){
+
+    patientObj.region = ReplacedPatient.region;
+    HospitalTracker(patientObj.region, patientGrade, 0)
+    New_Patient_List.push(patientObj);
+    PH_array.push(patientObj);
+    let patientIndex = findPatient(ReplacedPatient.region, ReplacedPatient.grading, New_Patient_List)
+
     New_Patient_List[patientIndex].flag = 1;
+    HospitalTracker(New_Patient_List[patientIndex].region, New_Patient_List[patientIndex].grading, 1);
     Admit(New_Patient_List[patientIndex], New_Patient_List)
-    HospitalTracker(New_Patient_List[patientIndex].region, New_Patient_List[patientIndex].grade, true)
     New_Patient_List.splice(patientIndex, 1)
-    patientObj.region = ReplaceInHospital;
+    return New_Patient_List;
   }
   PH_array.push(patientObj);
+  HospitalTracker(patientObj.region, patientGrade, 0);
   New_Patient_List.push(patientObj);
-  HospitalTracker(patientObj.region, patientGrade, false)
-  return New_Patient_List
+  return New_Patient_List;
 }
 
 // On a patients way to their prefered hospital, we check each hospital to find replacable patients of lower grade.
 // (If yes) Returns the region of that hospital hospital (Otherwise return "no")
-function TryReplace(FromRegion, patient_grade, patient_flag, New_Patient_List){
+function TryReplace(FromRegion, patient_grade, New_Patient_List) {
     let shortest_route = 500;
-    let Prefered_hospital = "no";
+    let PatientObj = false;
     for (index in TravelTimeList){
       TravelTime = TravelTimeList[index];
       if ((TravelTime.from_region == FromRegion) && (TravelTime.min<shortest_route)){
-        if (crowdedness(HospitalList[TravelTime.To_region].Beds) == 0 && (patient_grade > LowestGradePatient(TravelTime.To_region, New_Patient_List))){
-            shortest_route = TravelTime.min;
-            Prefered_hospital = TravelTime.To_region;
+        if (crowdedness(HospitalList[TravelTime.To_region].Beds) == 0){
+          ReplacedPatient = LowestGradePatient(TravelTime.To_region, New_Patient_List);
+          if (patient_grade > ReplacedPatient.grading){
+            PatientObj = ReplacedPatient;
+          }
         }
       }
     }
-    return Prefered_hospital;
+  return PatientObj;
 }
 
 //Returns lowest grade of patient in a region 
 function LowestGradePatient(Region, New_Patient_List){
+  let ReplacedPatient;
   let placeholder_grading = 5;
   for(index in New_Patient_List){
     if (New_Patient_List[index].grading <= placeholder_grading && New_Patient_List[index].region == Region && New_Patient_List[index].flag == 0){
-      placeholder_grading = New_Patient_List[index].grading; 
+      ReplacedPatient = New_Patient_List[index]; 
+      placeholder_grading = New_Patient_List[index].grading
     }
   }
-  return placeholder_grading;
+  return ReplacedPatient;
 }
 
 //Changes number of beds/admitted in HospitalLists, when admitting a patient
 function HospitalTracker(region, PatientGrade, remove){
-  if (remove == false){
+  if (remove == 0){
     HospitalList[region].admitted += 1
-    if (PatientGrade > 0)
+    if (PatientGrade > 0){
       HospitalList[region].Beds -= 1
+    }
     if (PatientGrade == 3)
       HospitalList[region].eqp -= 1
   }
-  else if (remove == true){
+  else if (remove == 1){
     HospitalList[region].admitted -= 1;
-    if (PatientGrade > 0)
+    if (PatientGrade > 0){
       HospitalList[region].Beds += 1;
+    }
     if (PatientGrade == 3)
       HospitalList[region].eqp += 1;
   }
@@ -208,7 +184,6 @@ function HospitalTracker(region, PatientGrade, remove){
 // Runs through all new patients which needs to be admitted (this is the function we call initially)
 function BatchPatients(PatientList, city, New_Patient_List){
     cityToRegion(PatientList, city)
-
      New_Patient_List = Admit(PatientList, New_Patient_List)
 
     // for(index in HospitalList){
