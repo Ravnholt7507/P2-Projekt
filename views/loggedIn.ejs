@@ -165,6 +165,16 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
         </form>
         <br>
 
+        <!-- Form for searching for patients with the intent to unadmit them. This form will only appear 
+        when the user navigates to the unadmit subpage. -->
+        <div id="unadmit">
+          <form>
+            <label for="search">Search</label>
+            <input type="text" id="Search" list="patients">
+            <button type="submit">Unadmit</button>
+          </form>
+        </div><br>
+
         <!-- Field where the result of submitting a patient will appear -->
         <div id="submitResult">
           
@@ -182,16 +192,6 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
           <p>Select which type of solver the system is using. Using solver 2 means patients can be moved more than once per week. If solver 1 is used, patients can only be moved between hospitals once a week.</p>
           <p><b id="solver"> </b></p> <a href="#" onclick="solverChange()">Change</a>
         </div>
-
-        <!-- Form for searching for patients with the intent to unadmit them. This form will only appear 
-        when the user navigates to the unadmit subpage. -->
-        <div id="unadmit">
-          <form>
-            <label for="search">Search</label>
-            <input type="text" id="Search" list="patients">
-            <button type="submit">Unadmit</button>
-          </form>
-        </div><br>
 
         <!-- Section where statistics about how many bed spaces and equipment are being used in each region will appear. 
         Only visible when user navigates to the statistics subpage. -->
@@ -517,9 +517,9 @@ pInput.addEventListener("submit", async (e) => {
       let patientData = "";
       for (index in RPs){
         if (index != NewPatient)
-          patientData += "Patient " + RPs[index].Name + " is to be moved to region " + RPs[index].region + " ";
+          patientData += "Patient " + RPs[index].Name + " with ID " + RPs[index].PID + " is to be moved to region " + SelectRegion(RPs[index].region) + " ";
       }
-      submitResults.innerHTML = "<b>Result: </b>Patient " + RPs[NewPatient].Name + " is to be submitted to region " + RPs[NewPatient].region+ " With ID " + RPs[NewPatient].PID;
+      submitResults.innerHTML = "<b>Result: </b>Patient " + RPs[NewPatient].Name + " is to be submitted to region " + SelectRegion(RPs[NewPatient].region) + " With ID " + RPs[NewPatient].PID;
       if (patientData != undefined)
         otherPatients.innerHTML = patientData;
  //     console.log(RPs);
@@ -536,6 +536,18 @@ pInput.addEventListener("submit", async (e) => {
       return index
     }
   }
+function SelectRegion(RegionNumber){
+  let RegionName = "";
+  switch(RegionNumber) {
+    case 0: RegionName = 'Nordjylland'; break;
+    case 1: RegionName = 'MidtJylland'; break;
+    case 2: RegionName = 'Syddanmark'; break;
+    case 3: RegionName = 'Sjælland'; break;
+    case 4: RegionName = 'Hovedstaden'
+  default: RegionName = 'Kunne ikke finde region'
+  }
+  return RegionName;
+}
   
 });
 </script>
