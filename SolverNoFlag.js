@@ -144,64 +144,76 @@ function findPatient(Region, grading, New_Patient_List){
 function Admit(patientObj, New_Patient_List){
   let patientGrade = patientObj.grading;
   let patientRegion = patientObj.region;
+
   let NewRegion = travel_Hospital(patientRegion, patientGrade)
   patientObj.region = NewRegion;
-  
   // If patient can be replaced with other patient -> find other patient's index.
-  let ReplaceInHospital = TryReplace(patientRegion, patientGrade, New_Patient_List);
-  if((ReplaceInHospital != "no") && (ReplaceInHospital < 5) && (ReplaceInHospital >= 0)){
-    let patientIndex = findPatient(ReplaceInHospital, LowestGradePatient(ReplaceInHospital, New_Patient_List), New_Patient_List)
+
+  let ReplacedPatient = TryReplace(patientRegion, patientGrade, New_Patient_List);
+  //Should return patient object, så sætter jeg ReplaceInHospital til dens region property, 
+  //Sætter bageefter ellers mangler koden bare at blive kommenteret 
+  if(ReplacedPatient != false){
+    
+    patientObj.region = ReplacedPatient.region;
+    HospitalTracker(patientObj.region, patientGrade, 0)
+    New_Patient_List.push(patientObj);
+    PH_array.push(patientObj);
+    let patientIndex = findPatient(ReplacedPatient.region, ReplacedPatient.grading, New_Patient_List)
+
     New_Patient_List[patientIndex].flag = 1;
+    HospitalTracker(New_Patient_List[patientIndex].region, New_Patient_List[patientIndex].grading, 1);
     Admit(New_Patient_List[patientIndex], New_Patient_List)
-    HospitalTracker(New_Patient_List[patientIndex].region, New_Patient_List[patientIndex].grade, true)
     New_Patient_List.splice(patientIndex, 1)
-    patientObj.region = ReplaceInHospital;
+    return New_Patient_List;
   }
   PH_array.push(patientObj);
+  HospitalTracker(patientObj.region, patientGrade, 0)
   New_Patient_List.push(patientObj);
-  HospitalTracker(patientObj.region, patientGrade, false)
-  return New_Patient_List
+  return New_Patient_List;
 }
+
 
 // On a patients way to their prefered hospital, we check each hospital to find replacable patients of lower grade.
 // (If yes) Returns the region of that hospital hospital (Otherwise return "no")
-function TryReplace(FromRegion, patient_grade, New_Patient_List){
-    let shortest_route = 500;
-    let Prefered_hospital = "no";
-    for (index in TravelTimeList){
-      TravelTime = TravelTimeList[index];
-      if ((TravelTime.from_region == FromRegion) && (TravelTime.min<shortest_route)){
-        if (crowdedness(HL.HospitalList[TravelTime.To_region].Beds) == 0 && (patient_grade > LowestGradePatient(TravelTime.To_region, New_Patient_List))){
-            shortest_route = TravelTime.min;
-            Prefered_hospital = TravelTime.To_region;
+function TryReplace(FromRegion, patient_grade, New_Patient_List) {
+  let shortest_route = 500;
+  let PatientObj = false;
+  for (index in TravelTimeList){
+    TravelTime = TravelTimeList[index];
+    if ((TravelTime.from_region == FromRegion) && (TravelTime.min<shortest_route)){
+      if (crowdedness(HospitalList[TravelTime.To_region].Beds) == 0){
+        ReplacedPatient = LowestGradePatient(TravelTime.To_region, New_Patient_List);
+        if (patient_grade > ReplacedPatient.grading){
+          PatientObj = ReplacedPatient;
         }
       }
     }
-    return Prefered_hospital;
+  }
+return PatientObj;
 }
-
 //Returns lowest grade of patient in a region 
 function LowestGradePatient(Region, New_Patient_List){
+  let ReplacedPatient;
   let placeholder_grading = 5;
   for(index in New_Patient_List){
     if (New_Patient_List[index].grading <= placeholder_grading && New_Patient_List[index].region == Region){
-      placeholder_grading = New_Patient_List[index].grading; 
+      ReplacedPatient = New_Patient_List[index]; 
+      placeholder_grading = New_Patient_List[index].grading
     }
   }
-  return placeholder_grading;
+  return ReplacedPatient;
 }
 
 //Changes number of beds/admitted in HospitalLists, when admitting a patient
 function HospitalTracker(region, PatientGrade, remove){
-  if (remove == false){
+  if (remove == 0){
       HL.HospitalList[region].admitted += 1
     if (PatientGrade > 0)
       HL.HospitalList[region].Beds -= 1
     if (PatientGrade == 3)
       HL.HospitalList[region].eqp -= 1
   }
-  else if (remove == true){
-    console.log("Alola");
+  else if (remove == 1){
       HL.HospitalList[region].admitted -= 1;
     if (PatientGrade > 0)
       HL.HospitalList[region].Beds += 1;
