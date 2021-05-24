@@ -15,7 +15,9 @@ const port = 3000;
 let solver = 1;
 let List = [];
 
-List = JSON.parse(fs.readFileSync('PatientList.json').toString().split('\r\n'));
+if (List.length != 0) { 
+  List = JSON.parse(fs.readFileSync('PatientList.json').toString().split('\r\n'));
+}
 
 app.set('view-engine', 'ejs');
 app.use(express.json());
@@ -63,7 +65,6 @@ app.post('/stats', (req, res) => {
         region4 : {Beds: SolverFlag.HospitalList[3].Beds, Staff: SolverFlag.HospitalList[3].staff, Equipment: SolverFlag.HospitalList[3].eqp, Admitted: SolverFlag.HospitalList[3].admitted},
         region5 : {Beds: SolverFlag.HospitalList[4].Beds, Staff: SolverFlag.HospitalList[4].staff, Equipment: SolverFlag.HospitalList[4].eqp, Admitted: SolverFlag.HospitalList[4].admitted}
         };
-
     res.json(Stats);
 });
 
@@ -116,9 +117,7 @@ app.post('/api', (request, response) => {
          validatePatientData(Patient);
          if (solver == 1){
            List = SolverFlag.BatchPatients(Patient, data.icity, List);
-
            let JsonList = JSON.stringify(List);
-
            fs.writeFileSync('PatientList.json', JsonList, (err) => {
              if (err)
                throw err;
@@ -129,6 +128,11 @@ app.post('/api', (request, response) => {
          }
          else if (solver == 2){
            List = SolverNoFlag.BatchPatients(Patient, data.icity, List);
+           let JsonList = JSON.stringify(List);
+           fs.writeFileSync('PatientList.json', JsonList, (err) => {
+             if (err)
+               throw err;
+           });
            response.json(SolverNoFlag.PH_array);
            SolverNoFlag.Delete_PH_array();
          }
