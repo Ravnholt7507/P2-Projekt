@@ -311,7 +311,7 @@ async function getPatientlist() {
   patientslist.id = 'patients';
   for (index in jsonData) {
     var option = document.createElement('option');
-    option.value = jsonData[index].Name + ' grade: ' + jsonData[index].grading + ' region: ' + jsonData[index].r+ ' ID: ' + jsonData[index].PID;
+    option.value = jsonData[index].Name + ' grade: ' + jsonData[index].grading + ' region: ' + jsonData[index].region + ' ID: ' + jsonData[index].PID;
     option.id = index;
     patientslist.appendChild(option);
   }
@@ -404,7 +404,7 @@ async function updateStats() {
   };
   const response = await fetch("/stats", options);
   const jsonData = await response.json();
-  statistics.innerHTML = '<table><tr><th>Region</th><th>Beds</th><th>Admitted</th><th>Staff</th><th>Equipment</th></tr><tr><th>1</th><th>' + jsonData.region1.Beds + '</th><th>' + jsonData.region1.Admitted + '</th><th>' + jsonData.region1.Staff + '</th><th>' + jsonData.region1.Equipment + '</th></tr><tr><th>2</th><th>' + jsonData.region2.Beds + '</th><th>' + jsonData.region2.Admitted + '</th><th>' + jsonData.region2.Staff + '</th><th>' + jsonData.region2.Equipment + '</th></tr><tr><th>3</th><th>' + jsonData.region3.Beds + '</th><th>' + jsonData.region3.Admitted + '</th><th>' + jsonData.region3.Staff + '</th><th>' + jsonData.region3.Equipment + '</th></tr><tr><th>4</th><th>' + jsonData.region4.Beds + '</th><th>' + jsonData.region4.Admitted + '</th><th>' + jsonData.region4.Staff + '</th><th>' + jsonData.region4.Equipment + '</th></tr><tr><th>5</th><th>' + jsonData.region5.Beds + '</th><th>' + jsonData.region5.Admitted + '</th><th>' + jsonData.region5.Staff + '</th><th>' + jsonData.region5.Equipment + '</th></tr></table>';
+  statistics.innerHTML = '<table><tr><th>Region</th><th>Beds</th><th>Admitted</th><th>Equipment</th></tr><tr><th>1</th><th>' + jsonData.region1.Beds + '</th><th>' + jsonData.region1.Admitted + '</th><th>' + jsonData.region1.Equipment + '</th></tr><tr><th>2</th><th>' + jsonData.region2.Beds + '</th><th>' + jsonData.region2.Admitted + '</th><th>' + jsonData.region2.Equipment + '</th></tr><tr><th>3</th><th>' + jsonData.region3.Beds + '</th><th>' + jsonData.region3.Admitted + '</th><th>' + jsonData.region3.Equipment + '</th></tr><tr><th>4</th><th>' + jsonData.region4.Beds + '</th><th>' + jsonData.region4.Admitted + '</th><th>' + jsonData.region4.Equipment + '</th></tr><tr><th>5</th><th>' + jsonData.region5.Beds + '</th><th>' + jsonData.region5.Admitted + '</th><th>' + jsonData.region5.Equipment + '</th></tr></table>';
   let YBeds = [jsonData.region1.Beds,  jsonData.region2.Beds, jsonData.region3.Beds, jsonData.region4.Beds, jsonData.region5.Beds] 
   let YAdmitted = [jsonData.region1.Admitted, jsonData.region2.Admitted, jsonData.region3.Admitted, jsonData.region5.Admitted]
   let Yeqp = [jsonData.region1.Equipment, jsonData.region2.Equipment, jsonData.region3.Equipment, jsonData.region4.Equipment, jsonData.region5.Equipment]
