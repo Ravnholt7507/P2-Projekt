@@ -130,9 +130,9 @@ function travel_Hospital(FromRegion, patient_grade){
 }
 
 //Finds and returns a patient index the list, based on region and grading. 
-function findPatient(Region, grading, New_Patient_List){
+function findPatientIndex(ID, New_Patient_List){
     for(index in New_Patient_List){
-      if (New_Patient_List[index].region == Region && New_Patient_List[index].grading == grading)
+      if (New_Patient_List[index].PID == ID)
         return index;
     }
   return "no";
@@ -158,7 +158,7 @@ function Admit(patientObj, New_Patient_List){
     HospitalTracker(patientObj.region, patientGrade, 0)
     New_Patient_List.push(patientObj);
     PH_array.push(patientObj);
-    let patientIndex = findPatient(ReplacedPatient.region, ReplacedPatient.grading, New_Patient_List)
+    let patientIndex = findPatientIndex(ReplacedPatient.PID, New_Patient_List)
 
     New_Patient_List[patientIndex].flag = 1;
     HospitalTracker(New_Patient_List[patientIndex].region, New_Patient_List[patientIndex].grading, 1);
@@ -181,7 +181,7 @@ function TryReplace(FromRegion, patient_grade, New_Patient_List) {
   for (index in TravelTimeList){
     TravelTime = TravelTimeList[index];
     if ((TravelTime.from_region == FromRegion) && (TravelTime.min<shortest_route)){
-      if (crowdedness(HospitalList[TravelTime.To_region].Beds) == 0){
+      if (crowdedness(HL.HospitalList[TravelTime.To_region].Beds) == 0){
         ReplacedPatient = LowestGradePatient(TravelTime.To_region, New_Patient_List);
         if (patient_grade > ReplacedPatient.grading){
           PatientObj = ReplacedPatient;
@@ -253,7 +253,7 @@ Admit,
 HospitalTracker,
 TryReplace,
 LowestGradePatient,
-findPatient,
+findPatientIndex,
 travel_Hospital,
 crowdedness,
 cityToRegion,
