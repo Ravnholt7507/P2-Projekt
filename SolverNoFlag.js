@@ -1,15 +1,8 @@
 let regions = require('./branch.js');
 let fs = require('fs');
-let HL = require('./SolverFlag')
+let HL = require('SolverFlag')
 
 let PH_array = [];
-
-// let HospitalList = [0,0,0,0,0];
-// HospitalList[0] = {ID: 0, Region: 0, Navn: 'UniversetsHospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300}
-// HospitalList[1] = {ID: 1, Region: 1, Navn: 'Midt Hospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300}
-// HospitalList[2] = {ID: 2, Region: 2, Navn: 'Odense Hospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300}
-// HospitalList[3] = {ID: 3, Region: 3, Navn: 'Sjalland Hospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300}
-// HospitalList[4] = {ID: 4, Region: 4, Navn: 'Koebenhavn Hospital', Address: 'Example', Beds: 2, admitted: 0, eqp: 300}
 
 let TravelTimeList = [];
 TravelTimeList[0] = {from_region: 0, To_region: 0, min: 0}
@@ -37,46 +30,6 @@ TravelTimeList[21] = {from_region: 4, To_region: 1, min: 3}
 TravelTimeList[22] = {from_region: 4, To_region: 2, min: 2}
 TravelTimeList[23] = {from_region: 4, To_region: 3, min: 1}
 TravelTimeList[24] = {from_region: 4, To_region: 4, min: 0}
-
-
-// function validatePatientData(NameArr) {
-//   let DataErrorArr = [];
-//   for(index in NameArr) {
-//       try {
-//           if(nameValidation(NameArr[index]) == false) throw "Patient name";
-//           if(gradingValidation(GradingArr[index]) == false) throw "Patient grading";
-//           if(regionValidation(regions.gradeList[index]) == false) throw "Patient region";
-//       }
-//       catch(err) {
-//         let problem = 'Problem with patientlist[' + index + '] data, specifically ' + err;
-//         console.error(problem);
-//         DataErrorArr.unshift(index); // unshift adds element to the front of array
-//         fs.appendFile('./Error.txt', problem + "\n", err => {
-//           if(err) console.error("Error writing to Error.txt");
-//         });
-//       }
-//   }
-//   DeleteFaultyPatientData(DataErrorArr);
-// }
-// validatePatientData(NameArr)
-
-// function nameValidation(Name) {
-//   return isNaN(Name);
-// }
-
-// function gradingValidation(grading) {
-//   return (grading == 0 || grading == 1 || grading == 2 || grading == 3);
-// }
-
-// function regionValidation(region) {
-//   return (region == 0 || region == 1 || region == 2 || region == 3 || region == 4);
-// }
-
-// function DeleteFaultyPatientData(arr) {
-//   for(index in arr) {
-//     PatientList.splice(arr[index], 1);
-//   }
-// }
 
 //Checks capacity in hospital
 function crowdedness(beds){
@@ -178,6 +131,7 @@ function Admit(patientObj, New_Patient_List){
 function TryReplace(FromRegion, patient_grade, New_Patient_List) {
   let shortest_route = 500;
   let PatientObj = false;
+  let ReplacedPatient = 0;
   for (index in TravelTimeList){
     TravelTime = TravelTimeList[index];
     if ((TravelTime.from_region == FromRegion) && (TravelTime.min<shortest_route)){
@@ -220,6 +174,10 @@ function HospitalTracker(region, PatientGrade, remove){
     if (PatientGrade == 3)
       HL.HospitalList[region].eqp += 1;
   }
+  fs.writeFile('HospitalList.json', JSON.stringify(HospitalList), (err) => {
+    if (err)
+      throw err;
+  });
 }
 
 
@@ -257,7 +215,6 @@ findPatientIndex,
 travel_Hospital,
 crowdedness,
 cityToRegion,
-//HospitalList,
 PH_array,
 Delete_PH_array,
 }
