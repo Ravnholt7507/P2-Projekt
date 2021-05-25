@@ -303,7 +303,7 @@ async function getPatientlist() {
       headers: {"content-type": "application/json"},
       body: JSON.stringify()
   };
-  const response = await fetch("/patients", options);
+  const response = await fetch("/node0/patients", options);
   const jsonData = await response.json();
   console.log(jsonData); //test
   console.log(jsonData.length); //test
@@ -333,7 +333,7 @@ unadmit.addEventListener("submit", async (e) => {
       headers: {"content-type": "application/json"},
       body: JSON.stringify(unsubmitData)
   };
-  const response = await fetch("/unadmit", options);
+  const response = await fetch("/node0/unadmit", options);
   const jsonData = await response.json();
   submitResults.innerHTML = jsonData;
   patient.value = "";
@@ -402,7 +402,7 @@ async function updateStats() {
       headers: {"content-type": "application/json"},
       body: JSON.stringify()
   };
-  const response = await fetch("/stats", options);
+  const response = await fetch("/node0/stats", options);
   const jsonData = await response.json();
   statistics.innerHTML = '<table><tr><th>Region</th><th>Beds</th><th>Admitted</th><th>Equipment</th></tr><tr><th>1</th><th>' + jsonData.region1.Beds + '</th><th>' + jsonData.region1.Admitted + '</th><th>' + jsonData.region1.Equipment + '</th></tr><tr><th>2</th><th>' + jsonData.region2.Beds + '</th><th>' + jsonData.region2.Admitted + '</th><th>' + jsonData.region2.Equipment + '</th></tr><tr><th>3</th><th>' + jsonData.region3.Beds + '</th><th>' + jsonData.region3.Admitted + '</th><th>' + jsonData.region3.Equipment + '</th></tr><tr><th>4</th><th>' + jsonData.region4.Beds + '</th><th>' + jsonData.region4.Admitted + '</th><th>' + jsonData.region4.Equipment + '</th></tr><tr><th>5</th><th>' + jsonData.region5.Beds + '</th><th>' + jsonData.region5.Admitted + '</th><th>' + jsonData.region5.Equipment + '</th></tr></table>';
   let YBeds = [jsonData.region1.Beds,  jsonData.region2.Beds, jsonData.region3.Beds, jsonData.region4.Beds, jsonData.region5.Beds] 
@@ -462,7 +462,7 @@ async function solverChecker() {
       headers: {"content-type": "application/json"},
       body: JSON.stringify(data)
   };
-  const response = await fetch("/solver", options);
+  const response = await fetch("/node0/solver", options);
   const jsonData = await response.json();
   console.log(jsonData);
   document.getElementById("solver").innerHTML = "Currently in use: Solver " + jsonData.solver;
@@ -476,7 +476,7 @@ async function solverChange() {
       headers: {"content-type": "application/json"},
       body: JSON.stringify(solver)
   };
-  const response = await fetch("/solver", options);
+  const response = await fetch("/node0/solver", options);
   const jsonData = await response.json();
   document.getElementById("solver").innerHTML = "Currently in use: Solver " + jsonData.solver;
 }
@@ -511,7 +511,7 @@ pInput.addEventListener("submit", async (e) => {
         headers: {"content-type": "application/json"},
         body: JSON.stringify(patientObj)
       };
-      const response = await fetch("/api", options);
+      const response = await fetch("/node0/api", options);
       let RPs = await response.json();
       let NewPatient = GetIndex(iname, RPs)
       let patientData = "";
