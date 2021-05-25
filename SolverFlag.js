@@ -4,12 +4,9 @@ let fs = require('fs');
 let PH_array = [];
 
 let HospitalList = [0,0,0,0,0];
-HospitalList[0] = {ID: 0, Region: 0, Navn: 'UniversetsHospital', Address: 'Example', Beds: 10, admitted: 0, eqp: 5, staff: 2}
-HospitalList[1] = {ID: 1, Region: 1, Navn: 'Midt Hospital', Address: 'Example', Beds: 10, admitted: 0, eqp: 5, staff: 2}
-HospitalList[2] = {ID: 2, Region: 2, Navn: 'Odense Hospital', Address: 'Example', Beds: 10, admitted: 0, eqp: 5, staff: 2}
-HospitalList[3] = {ID: 3, Region: 3, Navn: 'Sjalland Hospital', Address: 'Example', Beds: 10, admitted: 0, eqp: 5, staff: 2}
-HospitalList[4] = {ID: 4, Region: 4, Navn: 'Koebenhavn Hospital', Address: 'Example', Beds: 10, admitted: 0, eqp: 5, staff: 2}
+HospitalList = JSON.parse(fs.readFileSync('HospitalList.json')).toString().split('\r\n')
 
+// An associative array that is used for finding smallest traveltimes between two regions.
 let TravelTimeList = [];
 TravelTimeList[0] = {from_region: 0, To_region: 0, min: 0}
 TravelTimeList[1] = {from_region: 0, To_region: 1, min: 1}
@@ -37,7 +34,7 @@ TravelTimeList[22] = {from_region: 4, To_region: 2, min: 2}
 TravelTimeList[23] = {from_region: 4, To_region: 3, min: 1}
 TravelTimeList[24] = {from_region: 4, To_region: 4, min: 0}
 
-//Checks capacity in hospital
+//Checks capacity in hospital returns 1 only if there are more beds available
 function crowdedness(beds){
     if (beds > 0)
         return 1;
@@ -45,6 +42,7 @@ function crowdedness(beds){
         return 0;
 }
 
+//Returns 1 if equipment is available
 function eqp(equip){
   if (equip > 0)
       return 1;
@@ -52,6 +50,7 @@ function eqp(equip){
       return 0;
 }
 
+//Is used when a patients is admitted. Converts City to region in a patient object. Uses the Branch module
 function cityToRegion(PatientList, city){
 let placeholder = 0;
   for(index in regions.regionCities){
@@ -68,7 +67,8 @@ let placeholder = 0;
   return PatientList;
 }
 
-// uses traveltimeList to find the shortest route and return the corresponding To_Region for the patient
+// Finds the shortest route to an available hospital-region. Returns that region.
+//Uses the TravelTimeList array to do so. If Patient grade is 0, return origin region.
 function travel_Hospital(FromRegion, patient_grade){
     let shortest_route = 500;
     let Prefered_hospital = FromRegion;
@@ -86,10 +86,10 @@ function travel_Hospital(FromRegion, patient_grade){
     return Prefered_hospital
 }
 
-//Finds and returns a patient index the list, based on region and grading. 
-function findPatient(Region, grading, New_Patient_List){
+//Get patient index in the list, based on region and grading. 
+function findPatientIndex(ID, New_Patient_List){
     for(index in New_Patient_List){
-      if (New_Patient_List[index].region == Region && New_Patient_List[index].grading == grading && New_Patient_List[index].flag == 0)
+      if (New_Patient_List[index].PID == ID && New_Patient_List[index].flag == 0)
         return index;
     }
   return "no";
@@ -101,12 +101,14 @@ function findPatient(Region, grading, New_Patient_List){
 function Admit(patientObj, New_Patient_List){
   let patientGrade = patientObj.grading;
   let patientRegion = patientObj.region;
+  let ReplacedPatient = false;
 
   let NewRegion = travel_Hospital(patientRegion, patientGrade)
   patientObj.region = NewRegion;
   // If patient can be replaced with other patient -> find other patient's index.
 
-  let ReplacedPatient = TryReplace(patientRegion, patientGrade, New_Patient_List);
+  if (patientObj.grading != 0)
+    ReplacedPatient = TryReplace(patientRegion, patientGrade, New_Patient_List);
   //Should return patient object, så sætter jeg ReplaceInHospital til dens region property, 
   //Sætter bageefter ellers mangler koden bare at blive kommenteret 
   if(ReplacedPatient != false){
@@ -115,7 +117,7 @@ function Admit(patientObj, New_Patient_List){
     HospitalTracker(patientObj.region, patientGrade, 0)
     New_Patient_List.push(patientObj);
     PH_array.push(patientObj);
-    let patientIndex = findPatient(ReplacedPatient.region, ReplacedPatient.grading, New_Patient_List)
+    let patientIndex = findPatientIndex(ReplacedPatient.PID, New_Patient_List)
 
     New_Patient_List[patientIndex].flag = 1;
     HospitalTracker(New_Patient_List[patientIndex].region, New_Patient_List[patientIndex].grading, 1);
@@ -134,13 +136,14 @@ function Admit(patientObj, New_Patient_List){
 function TryReplace(FromRegion, patient_grade, New_Patient_List) {
     let shortest_route = 500;
     let PatientObj = false;
+    let ReplacePatient = {name: "", grading: 0, region: 0, flag: 0, PID: 0}
     for (index in TravelTimeList){
       TravelTime = TravelTimeList[index];
       if ((TravelTime.from_region == FromRegion) && (TravelTime.min<shortest_route)){
         if (crowdedness(HospitalList[TravelTime.To_region].Beds) == 0){
-          ReplacedPatient = LowestGradePatient(TravelTime.To_region, New_Patient_List);
-          if (patient_grade > ReplacedPatient.grading){
-            PatientObj = ReplacedPatient;
+          ReplacePatient = LowestGradePatient(TravelTime.To_region, New_Patient_List);
+          if (patient_grade > ReplacePatient.grading){
+            PatientObj = ReplacePatient;
           }
         }
       }
@@ -179,6 +182,10 @@ function HospitalTracker(region, PatientGrade, remove){
     if (PatientGrade == 3)
       HospitalList[region].eqp += 1;
   }
+  fs.writeFileSync('HospitalList.json', JSON.stringify(HospitalList), (err) => {
+    if (err)
+      throw err;
+  });
 }
 
 // Runs through all new patients which needs to be admitted (this is the function we call initially)
@@ -210,7 +217,7 @@ Admit,
 HospitalTracker,
 TryReplace,
 LowestGradePatient,
-findPatient,
+findPatientIndex,
 travel_Hospital,
 crowdedness,
 cityToRegion,
