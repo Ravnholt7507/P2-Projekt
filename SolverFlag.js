@@ -3,8 +3,10 @@ let fs = require('fs');
 
 let PH_array = [];
 
-let HospitalList = [0,0,0,0,0];
-HospitalList = JSON.parse(fs.readFileSync('HospitalList.json')).toString().split('\r\n')
+let NoSpace = false;
+
+let HospitalData = fs.readFileSync('HospitalList.json').toString().split('\r\n');
+let HospitalList = JSON.parse(HospitalData);
 
 // An associative array that is used for finding smallest traveltimes between two regions.
 let TravelTimeList = [];
@@ -36,35 +38,29 @@ TravelTimeList[24] = {from_region: 4, To_region: 4, min: 0}
 
 //Checks capacity in hospital returns 1 only if there are more beds available
 function crowdedness(beds){
-    if (beds > 0)
-        return 1;
-    else
-        return 0;
+  // let StandardMax = 0.50*totalBeds;
+  //   if (beds > StandardMax)
+  //     return 1;
+  //   else if (beds < StandardMax)
+  //     return 2;
+  //   else if (beds == 0 || beds < 0)
+  //     return 0;
+  if (beds > 0)
+    return 1;
+  else
+    return 0;
 }
 
 //Returns 1 if equipment is available
-function eqp(equip){
-  if (equip > 0)
+function eqp(equip, PatientGrade){
+  if (PatientGrade == 3){
+    if (equip > 0)
       return 1;
-  else
+    else
       return 0;
-}
-
-//Is used when a patients is admitted. Converts City to region in a patient object. Uses the Branch module
-function cityToRegion(PatientList, city){
-let placeholder = 0;
-  for(index in regions.regionCities){
-    if(placeholder < regions.regionCities[index].length)
-       placeholder = regions.regionCities[index].length;
- }
-  for (index in regions.regionCities){
-    for(i = 0; i < placeholder; i++){
-      if (city == regions.regionCities[index][i])
-        PatientList.region = index;
-    }
   }
-  console.log(PatientList.region)
-  return PatientList;
+  else
+    return 1;
 }
 
 // Finds the shortest route to an available hospital-region. Returns that region.
@@ -75,7 +71,7 @@ function travel_Hospital(FromRegion, patient_grade){
     for (index in TravelTimeList){
       TravelTime = TravelTimeList[index]
       if ((TravelTime.from_region == FromRegion) && (TravelTime.min<shortest_route) && (patient_grade != 0)){
-        if (crowdedness(HospitalList[TravelTime.To_region].Beds) == 1){
+        if (crowdedness(HospitalList[TravelTime.To_region].Beds) == 1 && eqp(HospitalList[TravelTime.To_region].eqp, patient_grade) == 1){
           shortest_route = TravelTime.min;
           Prefered_hospital = TravelTime.To_region;
         }
@@ -153,10 +149,10 @@ function TryReplace(FromRegion, patient_grade, New_Patient_List) {
 
 //Returns lowest grade of patient in a region 
 function LowestGradePatient(Region, New_Patient_List){
-  let ReplacedPatient;
+  let ReplacedPatient = false;
   let placeholder_grading = 5;
   for(index in New_Patient_List){
-    if (New_Patient_List[index].grading <= placeholder_grading && New_Patient_List[index].region == Region && New_Patient_List[index].flag == 0){
+    if ((New_Patient_List[index].grading <= placeholder_grading) && (New_Patient_List[index].region == Region) && (New_Patient_List[index].flag == 0)){
       ReplacedPatient = New_Patient_List[index]; 
       placeholder_grading = New_Patient_List[index].grading
     }
@@ -166,6 +162,7 @@ function LowestGradePatient(Region, New_Patient_List){
 
 //Changes number of beds/admitted in HospitalLists, when admitting a patient
 function HospitalTracker(region, PatientGrade, remove){
+  console.log(region)
   if (remove == 0){
     HospitalList[region].admitted += 1
     if (PatientGrade > 0){
@@ -189,22 +186,9 @@ function HospitalTracker(region, PatientGrade, remove){
 }
 
 // Runs through all new patients which needs to be admitted (this is the function we call initially)
-function BatchPatients(PatientList, city, New_Patient_List){
-    cityToRegion(PatientList, city)
-     New_Patient_List = Admit(PatientList, New_Patient_List)
-
-    // for(index in HospitalList){
-    //     console.log("hospital space = " + HospitalList[index].Beds);
-    //     console.log("equipment = " + HospitalList[index].eqp);
-    // }
-    // console.log(HospitalList[0].admitted)
-    // console.log(HospitalList[1].admitted)
-    // console.log(HospitalList[2].admitted)
-    // console.log(HospitalList[3].admitted)
-    // console.log(HospitalList[4].admitted)
- //   console.log(New_Patient_List)
-
-    return New_Patient_List
+function BatchPatients(PatientList, New_Patient_List){
+  New_Patient_List = Admit(PatientList, New_Patient_List)
+  return New_Patient_List
  }
 
 function Delete_PH_array(){
@@ -220,7 +204,6 @@ LowestGradePatient,
 findPatientIndex,
 travel_Hospital,
 crowdedness,
-cityToRegion,
 HospitalList,
 PH_array,
 Delete_PH_array,
