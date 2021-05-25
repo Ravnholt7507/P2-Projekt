@@ -1,6 +1,6 @@
 let regions = require('./branch.js');
 let fs = require('fs');
-let HL = require('SolverFlag')
+let HL = require('./SolverFlag')
 
 let PH_array = [];
 
@@ -44,24 +44,6 @@ function eqp(equip){
       return 1;
   else
       return 0;
-}
-
-function cityToRegion(PatientList, city){
-
-let placeholder = 0;
-  for(index in regions.regionCities){
-    if(placeholder < regions.regionCities[index].length)
-       placeholder = regions.regionCities[index].length;
- }
-
-  for (index in regions.regionCities){
-    for(i = 0; i < placeholder; i++){
-      if (city == regions.regionCities[index][i])
-        PatientList.region = index;
-    }
-  }
-  console.log(PatientList.region)
-  return PatientList;
 }
 
 // uses traveltimeList to find the shortest route and return the corresponding To_Region for the patient
@@ -182,24 +164,10 @@ function HospitalTracker(region, PatientGrade, remove){
 
 
 // Runs through all new patients which needs to be admitted (this is the function we call initially)
-function BatchPatients(PatientList, city, New_Patient_List){
-    cityToRegion(PatientList, city)
-
-     New_Patient_List = Admit(PatientList, New_Patient_List)
-
-    // for(index in HospitalList){
-    //     console.log("hospital space = " + HospitalList[index].Beds);
-    //     console.log("equipment = " + HospitalList[index].eqp);
-    // }
-    // console.log(HospitalList[0].admitted)
-    // console.log(HospitalList[1].admitted)
-    // console.log(HospitalList[2].admitted)
-    // console.log(HospitalList[3].admitted)
-    // console.log(HospitalList[4].admitted)
- //   console.log(New_Patient_List)
-
-    return New_Patient_List
- }
+function BatchPatients(PatientList, New_Patient_List){
+  New_Patient_List = Admit(PatientList, New_Patient_List)
+  return New_Patient_List
+}
 
 function Delete_PH_array(){
   PH_array.splice(0, PH_array.length)
@@ -214,7 +182,6 @@ LowestGradePatient,
 findPatientIndex,
 travel_Hospital,
 crowdedness,
-cityToRegion,
 PH_array,
 Delete_PH_array,
 }

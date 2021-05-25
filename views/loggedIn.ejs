@@ -203,14 +203,6 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
         <div id="canvasElement">
         </div>
 
-
-    </div>
-    <div class="w3-third w3-container">
-      <p class="w3-border w3-padding-large w3-padding-32 w3-center">No ads to look at here.</p>
-      <p class="w3-border w3-padding-large w3-padding-64 w3-center">No ads to look at here.</p>
-    </div>
-  </div>
-
 </div>
 
 <script>
@@ -405,7 +397,7 @@ async function updateStats() {
   const response = await fetch("/node0/stats", options);
   const jsonData = await response.json();
   statistics.innerHTML = '<table><tr><th>Region</th><th>Beds</th><th>Admitted</th><th>Equipment</th></tr><tr><th>1</th><th>' + jsonData.region1.Beds + '</th><th>' + jsonData.region1.Admitted + '</th><th>' + jsonData.region1.Equipment + '</th></tr><tr><th>2</th><th>' + jsonData.region2.Beds + '</th><th>' + jsonData.region2.Admitted + '</th><th>' + jsonData.region2.Equipment + '</th></tr><tr><th>3</th><th>' + jsonData.region3.Beds + '</th><th>' + jsonData.region3.Admitted + '</th><th>' + jsonData.region3.Equipment + '</th></tr><tr><th>4</th><th>' + jsonData.region4.Beds + '</th><th>' + jsonData.region4.Admitted + '</th><th>' + jsonData.region4.Equipment + '</th></tr><tr><th>5</th><th>' + jsonData.region5.Beds + '</th><th>' + jsonData.region5.Admitted + '</th><th>' + jsonData.region5.Equipment + '</th></tr></table>';
-  let YBeds = [jsonData.region1.Beds,  jsonData.region2.Beds, jsonData.region3.Beds, jsonData.region4.Beds, jsonData.region5.Beds] 
+  let YBeds = [jsonData.region1.Beds, jsonData.region2.Beds, jsonData.region3.Beds, jsonData.region4.Beds, jsonData.region5.Beds] 
   let YAdmitted = [jsonData.region1.Admitted, jsonData.region2.Admitted, jsonData.region3.Admitted, jsonData.region5.Admitted]
   let Yeqp = [jsonData.region1.Equipment, jsonData.region2.Equipment, jsonData.region3.Equipment, jsonData.region4.Equipment, jsonData.region5.Equipment]
 //  DataObj = {Xvalues, Yvalues}
@@ -513,6 +505,22 @@ pInput.addEventListener("submit", async (e) => {
       };
       const response = await fetch("/node0/api", options);
       let RPs = await response.json();
+      console.log(RPs)
+      if (RPs == "no Space"){ 
+      alert('No more space available')
+      Name.value = "";
+      Grading.value = "-";
+      City.value = "";
+      return;
+      }
+      if (RPs == "no Eqp"){
+      alert('No more equipment in region')
+      Name.value = "";
+      Grading.value = "-";
+      City.value = "";
+      return;
+      }
+      else {
       let NewPatient = GetIndex(iname, RPs)
       let patientData = "";
       for (index in RPs){
@@ -522,20 +530,23 @@ pInput.addEventListener("submit", async (e) => {
       submitResults.innerHTML = "<b>Result: </b>Patient " + RPs[NewPatient].Name + " is to be submitted to region " + SelectRegion(RPs[NewPatient].region) + " With ID " + RPs[NewPatient].PID;
       if (patientData != undefined)
         otherPatients.innerHTML = patientData;
- //     console.log(RPs);
+      } 
       Name.value = "";
       Grading.value = "-";
       City.value = "";
       return;
     }
   }
-  alert("Please select a valid city");
-  function GetIndex(name, array){
-    for (index in array){
-      if (name == array[index].Name)
-      return index
-    }
+  alert("Please select a valid city");  
+});
+
+function GetIndex(name, array){
+  for (index in array){
+    if (name == array[index].Name)
+    return index
   }
+}
+
 function SelectRegion(RegionNumber){
   let RegionName = "";
   switch(RegionNumber) {
@@ -548,8 +559,7 @@ function SelectRegion(RegionNumber){
   }
   return RegionName;
 }
-  
-});
+
 </script>
 
 </body>
