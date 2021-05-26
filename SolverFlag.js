@@ -3,8 +3,6 @@ let fs = require('fs');
 
 let PH_array = [];
 
-let NoSpace = false;
-
 let HospitalData = fs.readFileSync('HospitalList.json').toString().split('\r\n');
 let HospitalList = JSON.parse(HospitalData);
 
@@ -38,7 +36,9 @@ TravelTimeList[24] = {from_region: 4, To_region: 4, min: 0}
 
 //Checks capacity in hospital returns 1 only if there are more beds available
 function crowdedness(beds){
-  // let StandardMax = 0.50*totalBeds;
+  // let maxBeds = parseFloat(totalBeds);
+  // let StandardMax = 0.50*maxBeds;
+  // console.log(StandardMax)
   //   if (beds > StandardMax)
   //     return 1;
   //   else if (beds < StandardMax)
@@ -66,17 +66,17 @@ function eqp(equip, PatientGrade){
 // Finds the shortest route to an available hospital-region. Returns that region.
 //Uses the TravelTimeList array to do so. If Patient grade is 0, return origin region.
 function travel_Hospital(FromRegion, patient_grade){
-    let shortest_route = 500;
-    let Prefered_hospital = FromRegion;
-    for (index in TravelTimeList){
-      TravelTime = TravelTimeList[index]
-      if ((TravelTime.from_region == FromRegion) && (TravelTime.min<shortest_route) && (patient_grade != 0)){
-        if (crowdedness(HospitalList[TravelTime.To_region].Beds) == 1 && eqp(HospitalList[TravelTime.To_region].eqp, patient_grade) == 1){
-          shortest_route = TravelTime.min;
-          Prefered_hospital = TravelTime.To_region;
-        }
+  let shortest_route = 500;
+  let Prefered_hospital = FromRegion;
+  for (index in TravelTimeList){
+    TravelTime = TravelTimeList[index]
+    if ((TravelTime.from_region == FromRegion) && (TravelTime.min<shortest_route) && (patient_grade != 0)){
+      if (crowdedness(HospitalList[TravelTime.To_region].Beds) == 1 && eqp(HospitalList[TravelTime.To_region].eqp, patient_grade) == 1){
+        shortest_route = TravelTime.min;
+        Prefered_hospital = TravelTime.To_region;
       }
     }
+  }
     if (patient_grade == 0)
        Prefered_hospital = FromRegion
     return Prefered_hospital
@@ -136,7 +136,7 @@ function TryReplace(FromRegion, patient_grade, New_Patient_List) {
     for (index in TravelTimeList){
       TravelTime = TravelTimeList[index];
       if ((TravelTime.from_region == FromRegion) && (TravelTime.min<shortest_route)){
-        if (crowdedness(HospitalList[TravelTime.To_region].Beds) == 0){
+        if (crowdedness(HospitalList[TravelTime.To_region].Beds) == 0 && eqp(HospitalList[TravelTime.To_region].eqp, patient_grade) == 1) {
           ReplacePatient = LowestGradePatient(TravelTime.To_region, New_Patient_List);
           if (patient_grade > ReplacePatient.grading){
             PatientObj = ReplacePatient;
