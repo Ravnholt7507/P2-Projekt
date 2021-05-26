@@ -3,6 +3,7 @@ let fs = require('fs');
 
 let PH_array = [];
 
+//Load data from the HospitalList.
 let HospitalData = fs.readFileSync('HospitalList.json').toString().split('\r\n');
 let HospitalList = JSON.parse(HospitalData);
 
@@ -34,24 +35,57 @@ TravelTimeList[22] = {from_region: 4, To_region: 2, min: 2}
 TravelTimeList[23] = {from_region: 4, To_region: 3, min: 1}
 TravelTimeList[24] = {from_region: 4, To_region: 4, min: 0}
 
+
+//Admit is called for each new patient. It essentially changes their region to match the most suitable hospital. 
+//It also calls itself recursively, if two patients in a region can be swapped. 
+//Returns updated patient list. HospitalList is updated everytime a patient is pushed or spliced from the array.
+function Admit(patientObj, New_Patient_List){
+  let patientGrade = patientObj.grading;
+  let patientRegion = patientObj.region;
+  let ReplacedPatient = false;
+
+//Get shortest route to free hospital available (Can also be the origin regions hospital)
+  let NewRegion = travel_Hospital(patientRegion, patientGrade)
+  patientObj.region = NewRegion;
+
+//If patient grade is not 0
+//See if patient can be replaced with other patient
+  if (patientObj.grading != 0)
+    ReplacedPatient = TryReplace(patientRegion, patientGrade, New_Patient_List);
+//If replacable patient is found ->
+  if(ReplacedPatient != false){
+
+//Change patients region to that of the replacable patient
+//and push him into list 
+    patientObj.region = ReplacedPatient.region;
+    HospitalTracker(patientObj.region, patientGrade, 0)
+    New_Patient_List.push(patientObj);
+    PH_array.push(patientObj);
+
+//Find index of the replaced patient. Re-admit him and splice him from this position
+    let patientIndex = findPatientIndex(ReplacedPatient.PID, New_Patient_List);
+    New_Patient_List[patientIndex].flag = 1;
+    HospitalTracker(New_Patient_List[patientIndex].region, New_Patient_List[patientIndex].grading, 1);
+    Admit(New_Patient_List[patientIndex], New_Patient_List);
+    New_Patient_List.splice(patientIndex, 1);
+    return New_Patient_List;
+  }
+// If no replacable patient is found, simply push original patient onto list
+  PH_array.push(patientObj);
+  HospitalTracker(patientObj.region, patientGrade, 0);
+  New_Patient_List.push(patientObj);
+  return New_Patient_List;
+}
+
 //Checks capacity in hospital returns 1 only if there are more beds available
 function crowdedness(beds){
-  // let maxBeds = parseFloat(totalBeds);
-  // let StandardMax = 0.50*maxBeds;
-  // console.log(StandardMax)
-  //   if (beds > StandardMax)
-  //     return 1;
-  //   else if (beds < StandardMax)
-  //     return 2;
-  //   else if (beds == 0 || beds < 0)
-  //     return 0;
   if (beds > 0)
     return 1;
   else
     return 0;
 }
 
-//Returns 1 if equipment is available
+//Returns 1 if equipment is available and grade 3. Returns 1 on any other grade as well
 function eqp(equip, PatientGrade){
   if (PatientGrade == 3){
     if (equip > 0)
@@ -65,12 +99,12 @@ function eqp(equip, PatientGrade){
 
 // Finds the shortest route to an available hospital-region. Returns that region.
 //Uses the TravelTimeList array to do so. If Patient grade is 0, return origin region.
-function travel_Hospital(FromRegion, patient_grade){
+function travel_Hospital(OriginRegion, patient_grade){
   let shortest_route = 500;
-  let Prefered_hospital = FromRegion;
+  let Prefered_hospital = OriginRegion;
   for (index in TravelTimeList){
     TravelTime = TravelTimeList[index]
-    if ((TravelTime.from_region == FromRegion) && (TravelTime.min<shortest_route) && (patient_grade != 0)){
+    if ((TravelTime.from_region == OriginRegion) && (TravelTime.min<shortest_route) && (patient_grade != 0)){
       if (crowdedness(HospitalList[TravelTime.To_region].Beds) == 1 && eqp(HospitalList[TravelTime.To_region].eqp, patient_grade) == 1){
         shortest_route = TravelTime.min;
         Prefered_hospital = TravelTime.To_region;
@@ -78,7 +112,7 @@ function travel_Hospital(FromRegion, patient_grade){
     }
   }
     if (patient_grade == 0)
-       Prefered_hospital = FromRegion
+       Prefered_hospital = OriginRegion
     return Prefered_hospital
 }
 
@@ -89,42 +123,6 @@ function findPatientIndex(ID, New_Patient_List){
         return index;
     }
   return "no";
-}
-
-//Admit is called for each new patient. It essentially changes their region to match the most suitable hospital. 
-//It also calls itself recursively, if two patients in a region can be swapped. 
-//Returns updated patient list.
-function Admit(patientObj, New_Patient_List){
-  let patientGrade = patientObj.grading;
-  let patientRegion = patientObj.region;
-  let ReplacedPatient = false;
-
-  let NewRegion = travel_Hospital(patientRegion, patientGrade)
-  patientObj.region = NewRegion;
-  // If patient can be replaced with other patient -> find other patient's index.
-
-  if (patientObj.grading != 0)
-    ReplacedPatient = TryReplace(patientRegion, patientGrade, New_Patient_List);
-  //Should return patient object, så sætter jeg ReplaceInHospital til dens region property, 
-  //Sætter bageefter ellers mangler koden bare at blive kommenteret 
-  if(ReplacedPatient != false){
-
-    patientObj.region = ReplacedPatient.region;
-    HospitalTracker(patientObj.region, patientGrade, 0)
-    New_Patient_List.push(patientObj);
-    PH_array.push(patientObj);
-    let patientIndex = findPatientIndex(ReplacedPatient.PID, New_Patient_List)
-
-    New_Patient_List[patientIndex].flag = 1;
-    HospitalTracker(New_Patient_List[patientIndex].region, New_Patient_List[patientIndex].grading, 1);
-    Admit(New_Patient_List[patientIndex], New_Patient_List)
-    New_Patient_List.splice(patientIndex, 1)
-    return New_Patient_List;
-  }
-  PH_array.push(patientObj);
-  HospitalTracker(patientObj.region, patientGrade, 0);
-  New_Patient_List.push(patientObj);
-  return New_Patient_List;
 }
 
 // On a patients way to their prefered hospital, we check each hospital to find replacable patients of lower grade.
@@ -147,29 +145,30 @@ function TryReplace(FromRegion, patient_grade, New_Patient_List) {
   return PatientObj;
 }
 
-//Returns lowest grade of patient in a region 
+//Returns lowest grade patient in a region  
 function LowestGradePatient(Region, New_Patient_List){
   let ReplacedPatient = false;
   let placeholder_grading = 5;
   for(index in New_Patient_List){
     if ((New_Patient_List[index].grading <= placeholder_grading) && (New_Patient_List[index].region == Region) && (New_Patient_List[index].flag == 0)){
       ReplacedPatient = New_Patient_List[index]; 
-      placeholder_grading = New_Patient_List[index].grading
+      placeholder_grading = New_Patient_List[index].grading;
     }
   }
   return ReplacedPatient;
 }
 
-//Changes number of beds/admitted in HospitalLists, when admitting a patient
+//Changes number of beds/admitted in HospitalLists, when admitting a patient.
+//third parameter determines wheter a patient is removed or not.
 function HospitalTracker(region, PatientGrade, remove){
-  console.log(region)
+  console.log(region);
   if (remove == 0){
-    HospitalList[region].admitted += 1
+    HospitalList[region].admitted += 1;
     if (PatientGrade > 0){
-      HospitalList[region].Beds -= 1
+      HospitalList[region].Beds -= 1;
     }
     if (PatientGrade == 3)
-      HospitalList[region].eqp -= 1
+      HospitalList[region].eqp -= 1;
   }
   else if (remove == 1){
     HospitalList[region].admitted -= 1;
@@ -179,6 +178,7 @@ function HospitalTracker(region, PatientGrade, remove){
     if (PatientGrade == 3)
       HospitalList[region].eqp += 1;
   }
+// Overwrite HospitalList file
   fs.writeFileSync('HospitalList.json', JSON.stringify(HospitalList), (err) => {
     if (err)
       throw err;
@@ -187,14 +187,19 @@ function HospitalTracker(region, PatientGrade, remove){
 
 // Runs through all new patients which needs to be admitted (this is the function we call initially)
 function BatchPatients(PatientList, New_Patient_List){
-  New_Patient_List = Admit(PatientList, New_Patient_List)
-  return New_Patient_List
+  New_Patient_List = Admit(PatientList, New_Patient_List);
+  return New_Patient_List;
  }
 
+//Is called from the server. PH_array includes all patients who has been readmitted
+// after a patient has been submitted. It is sent as a response to the user. 
 function Delete_PH_array(){
   PH_array.splice(0, PH_array.length)
 }
 
+
+
+//Export necessary functions
 module.exports = {
 BatchPatients,
 Admit,
@@ -222,7 +227,7 @@ Delete_PH_array,
 
 
 
-
+//Remember to deadline below code before deadline
 
 
 // let PatientList = [];
@@ -250,3 +255,15 @@ Delete_PH_array,
   //        console.log("JSON data is saved.");
   //    });
   //  }
+
+
+
+    // let maxBeds = parseFloat(totalBeds);
+  // let StandardMax = 0.50*maxBeds;
+  // console.log(StandardMax)
+  //   if (beds > StandardMax)
+  //     return 1;
+  //   else if (beds < StandardMax)
+  //     return 2;
+  //   else if (beds == 0 || beds < 0)
+  //     return 0;
