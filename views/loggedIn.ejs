@@ -48,7 +48,7 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
         
         <!-- Form for submitting patients. Includes field for Patient name, drop down selection menu for grade, 
         and search with autocomplete for patient city. Will only be visible when user navigates to the subpage "admit patients" -->
-        <form class="Patientinput" action="/" id="pInput" type="hidden" method="POST">
+        <form class="Patientinput" action="/" id="pInput" type="hidden">
           <label for="fname">Patient name:</label><br>
           <input type="text" id="pname" name="name" value="" required><br>
           <label for="Grading">Grading:</label><br>
@@ -321,9 +321,9 @@ unadmit.addEventListener("submit", async (e) => {
   }
   let unsubmitData = {index: doesPatientExist.id}
   const options = {
-      method: 'POST',
-      headers: {"content-type": "application/json"},
-      body: JSON.stringify(unsubmitData)
+    method: 'POST',
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(unsubmitData)
   };
   const response = await fetch("/unadmit", options);
   const jsonData = await response.json();
@@ -398,7 +398,7 @@ async function updateStats() {
   const jsonData = await response.json();
   statistics.innerHTML = '<table><tr><th>Region</th><th>Beds</th><th>Admitted</th><th>Equipment</th></tr><tr><th>1</th><th>' + jsonData.region1.Beds + '</th><th>' + jsonData.region1.Admitted + '</th><th>' + jsonData.region1.Equipment + '</th></tr><tr><th>2</th><th>' + jsonData.region2.Beds + '</th><th>' + jsonData.region2.Admitted + '</th><th>' + jsonData.region2.Equipment + '</th></tr><tr><th>3</th><th>' + jsonData.region3.Beds + '</th><th>' + jsonData.region3.Admitted + '</th><th>' + jsonData.region3.Equipment + '</th></tr><tr><th>4</th><th>' + jsonData.region4.Beds + '</th><th>' + jsonData.region4.Admitted + '</th><th>' + jsonData.region4.Equipment + '</th></tr><tr><th>5</th><th>' + jsonData.region5.Beds + '</th><th>' + jsonData.region5.Admitted + '</th><th>' + jsonData.region5.Equipment + '</th></tr></table>';
   let YBeds = [jsonData.region1.Beds, jsonData.region2.Beds, jsonData.region3.Beds, jsonData.region4.Beds, jsonData.region5.Beds] 
-  let YAdmitted = [jsonData.region1.Admitted, jsonData.region2.Admitted, jsonData.region3.Admitted, jsonData.region5.Admitted]
+  let YAdmitted = [jsonData.region1.Admitted, jsonData.region2.Admitted, jsonData.region3.Admitted, jsonData.region4.Admitted, jsonData.region5.Admitted]
   let Yeqp = [jsonData.region1.Equipment, jsonData.region2.Equipment, jsonData.region3.Equipment, jsonData.region4.Equipment, jsonData.region5.Equipment]
 //  DataObj = {Xvalues, Yvalues}
   DataObj.Ydata.Beds = YBeds;
@@ -554,8 +554,8 @@ function SelectRegion(RegionNumber){
     case 1: RegionName = 'MidtJylland'; break;
     case 2: RegionName = 'Syddanmark'; break;
     case 3: RegionName = 'Sjælland'; break;
-    case 4: RegionName = 'Hovedstaden'
-  default: RegionName = 'Kunne ikke finde region'
+    case 4: RegionName = 'Hovedstaden'; break;
+  default: RegionName = 'Kunne ikke finde region';
   }
   return RegionName;
 }
