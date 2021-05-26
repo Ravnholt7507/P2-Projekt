@@ -425,12 +425,12 @@ async function updateStats() {
   let YBeds = [jsonData.region1.Beds, jsonData.region2.Beds, jsonData.region3.Beds, jsonData.region4.Beds, jsonData.region5.Beds]; 
   let YAdmitted = [jsonData.region1.Admitted, jsonData.region2.Admitted, jsonData.region3.Admitted, jsonData.region4.Admitted, jsonData.region5.Admitted];
   let Yeqp = [jsonData.region1.Equipment, jsonData.region2.Equipment, jsonData.region3.Equipment, jsonData.region4.Equipment, jsonData.region5.Equipment];
-//  DataObj = {Xvalues, Yvalues}
+//  DataObj = {Xvalues, Yvalues};
   DataObj.Ydata.Beds = YBeds;
   DataObj.Ydata.Admitted = YAdmitted;
   DataObj.Ydata.eqp = Yeqp;
-//  console.log(DataObj.Ydata)
-addData(myChart, DataObj.Ydata)
+//  console.log(DataObj.Ydata);
+addData(myChart, DataObj.Ydata);
 }
 function addData(myChart, Ydata) {
   for(index in Ydata.Beds){
