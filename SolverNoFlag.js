@@ -39,13 +39,16 @@ function crowdedness(beds){
         return 0;
 }
 
-function eqp(equip){
-  if (equip > 0)
+function eqp(equip, PatientGrade){
+  if (PatientGrade == 3){
+    if (equip > 0)
       return 1;
-  else
+    else
       return 0;
+  }
+  else
+    return 1;
 }
-
 // uses traveltimeList to find the shortest route and return the corresponding To_Region for the patient
 function travel_Hospital(FromRegion, patient_grade){
     let shortest_route = 500;
@@ -53,7 +56,7 @@ function travel_Hospital(FromRegion, patient_grade){
     for (index in TravelTimeList){
       TravelTime = TravelTimeList[index]
       if ((TravelTime.from_region == FromRegion) && (TravelTime.min<shortest_route) && (patient_grade != 0)){
-        if (crowdedness(HL.HospitalList[TravelTime.To_region].Beds) == 1){
+        if (crowdedness(HL.HospitalList[TravelTime.To_region].Beds) == 1 && eqp(HL.HospitalList[TravelTime.To_region].eqp, patient_grade) == 1){
           shortest_route = TravelTime.min;
           Prefered_hospital = TravelTime.To_region;
         }
@@ -109,7 +112,6 @@ function Admit(patientObj, New_Patient_List){
   return New_Patient_List;
 }
 
-
 // On a patients way to their prefered hospital, we check each hospital to find replacable patients of lower grade.
 // (If yes) Returns the region of that hospital hospital (Otherwise return "no")
 function TryReplace(FromRegion, patient_grade, New_Patient_List) {
@@ -119,7 +121,7 @@ function TryReplace(FromRegion, patient_grade, New_Patient_List) {
   for (index in TravelTimeList){
     TravelTime = TravelTimeList[index];
     if ((TravelTime.from_region == FromRegion) && (TravelTime.min<shortest_route)){
-      if (crowdedness(HL.HospitalList[TravelTime.To_region].Beds) == 0){
+      if (crowdedness(HL.HospitalList[TravelTime.To_region].Beds) == 0 && eqp(HL.HospitalList[TravelTime.To_region].eqp, patient_grade) == 1){
         ReplacePatient = LowestGradePatient(TravelTime.To_region, New_Patient_List);
         if (patient_grade > ReplacePatient.grading) {
           PatientObj = ReplacePatient;
@@ -129,6 +131,7 @@ function TryReplace(FromRegion, patient_grade, New_Patient_List) {
   }
 return PatientObj;
 }
+
 //Returns lowest grade of patient in a region 
 function LowestGradePatient(Region, New_Patient_List){
   let ReplacedPatient = false;
