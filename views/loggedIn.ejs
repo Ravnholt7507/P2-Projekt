@@ -242,7 +242,7 @@ statistics.style.display = "none";
 // Get Section where the result of admitting patients will appear
 let submitResults = document.getElementById("submitResult");
 let otherPatients = document.getElementById("otherPatients");
-otherPatients.style.display = "none"
+otherPatients.style.display = "none";
 // Get form for unadmitting patients
 let unadmit = document.getElementById("unadmit");
 unadmit.style.display = "none";
@@ -261,7 +261,7 @@ function frontpage() {
   canvasElement.style.display = "none"; 
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
-  otherPatients.style.display = "none"
+  otherPatients.style.display = "none";
 }
 
 // Function that controls what is visible when user navigates to admit patients subpage
@@ -363,7 +363,7 @@ let canvas = document.createElement("CANVAS");
   canvas.id = 'myChart';
   canvas.width = '100';
   canvas.height = '100';
-  canvasElement.append(canvas)
+  canvasElement.append(canvas);
   
   DataObj = {Xdata: "", Ydata: {Beds: [2,2,2,2,2], Admitted: [0,0,0,0,0], eqp: [3,3,3,3,3]}}
   let Xvalues = ['Region Nordjylland', 'Region Midtjylland', 'Region Syddanmark', 'Region Sjælland', 'Region Hovedstad']
@@ -407,7 +407,7 @@ function Status_Regions() {
   canvasElement.style.display = "block";
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
-  otherPatients.style.display = "none"
+  otherPatients.style.display = "none";
   // Function that gets updated statistics from the server
   updateStats();
 }
@@ -422,9 +422,9 @@ async function updateStats() {
   const response = await fetch("/stats", options);
   const jsonData = await response.json();
   statistics.innerHTML = '<table><tr><th>Region</th><th>Beds</th><th>Admitted</th><th>Equipment</th></tr><tr><th>1</th><th>' + jsonData.region1.Beds + '</th><th>' + jsonData.region1.Admitted + '</th><th>' + jsonData.region1.Equipment + '</th></tr><tr><th>2</th><th>' + jsonData.region2.Beds + '</th><th>' + jsonData.region2.Admitted + '</th><th>' + jsonData.region2.Equipment + '</th></tr><tr><th>3</th><th>' + jsonData.region3.Beds + '</th><th>' + jsonData.region3.Admitted + '</th><th>' + jsonData.region3.Equipment + '</th></tr><tr><th>4</th><th>' + jsonData.region4.Beds + '</th><th>' + jsonData.region4.Admitted + '</th><th>' + jsonData.region4.Equipment + '</th></tr><tr><th>5</th><th>' + jsonData.region5.Beds + '</th><th>' + jsonData.region5.Admitted + '</th><th>' + jsonData.region5.Equipment + '</th></tr></table>';
-  let YBeds = [jsonData.region1.Beds, jsonData.region2.Beds, jsonData.region3.Beds, jsonData.region4.Beds, jsonData.region5.Beds] 
-  let YAdmitted = [jsonData.region1.Admitted, jsonData.region2.Admitted, jsonData.region3.Admitted, jsonData.region4.Admitted, jsonData.region5.Admitted]
-  let Yeqp = [jsonData.region1.Equipment, jsonData.region2.Equipment, jsonData.region3.Equipment, jsonData.region4.Equipment, jsonData.region5.Equipment]
+  let YBeds = [jsonData.region1.Beds, jsonData.region2.Beds, jsonData.region3.Beds, jsonData.region4.Beds, jsonData.region5.Beds]; 
+  let YAdmitted = [jsonData.region1.Admitted, jsonData.region2.Admitted, jsonData.region3.Admitted, jsonData.region4.Admitted, jsonData.region5.Admitted];
+  let Yeqp = [jsonData.region1.Equipment, jsonData.region2.Equipment, jsonData.region3.Equipment, jsonData.region4.Equipment, jsonData.region5.Equipment];
 //  DataObj = {Xvalues, Yvalues}
   DataObj.Ydata.Beds = YBeds;
   DataObj.Ydata.Admitted = YAdmitted;
@@ -434,9 +434,9 @@ addData(myChart, DataObj.Ydata)
 }
 function addData(myChart, Ydata) {
   for(index in Ydata.Beds){
-    myChart.data.datasets[0].data[index] = Ydata.Beds[index]
-    myChart.data.datasets[1].data[index] = Ydata.Admitted[index]
-    myChart.data.datasets[2].data[index] = Ydata.eqp[index]
+    myChart.data.datasets[0].data[index] = Ydata.Beds[index];
+    myChart.data.datasets[1].data[index] = Ydata.Admitted[index];
+    myChart.data.datasets[2].data[index] = Ydata.eqp[index];
   }
   myChart.update(0);
 }
@@ -453,7 +453,7 @@ function Instructions() {
   solve.style.display = "none";
   statistics.style.display = "none";
   canvasElement.style.display = "none"; 
-  otherPatients.style.display = "none"
+  otherPatients.style.display = "none";
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
 }
@@ -466,7 +466,7 @@ function Contact() {
   solve.style.display = "none";
   statistics.style.display = "none";
   canvasElement.style.display = "none"; 
-  otherPatients.style.display = "none"
+  otherPatients.style.display = "none";
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
 }
@@ -474,7 +474,7 @@ function Contact() {
 // Function that gets data from server about which solver is currently is use.
 async function solverChecker() {
 // Send request to server without the intent to change the solver
-  const data = {change: "false"}
+  const data = {change: "false"};
   const options = {
       method: 'POST',
       headers: {"content-type": "application/json"},
@@ -537,9 +537,9 @@ pInput.addEventListener("submit", async (e) => {
       // Print appropiate respons from server
       const response = await fetch("/api", options);
       let RPs = await response.json();
-      console.log(RPs)
+      console.log(RPs);
       if (RPs == "no Space"){ 
-      alert('No more space available')
+      alert('No more space available');
       Name.value = "";
       Grading.value = "-";
       City.value = "";
@@ -553,7 +553,7 @@ pInput.addEventListener("submit", async (e) => {
       return;
       }
       else {
-      let NewPatient = GetIndex(iname, RPs)
+      let NewPatient = GetIndex(iname, RPs);
       let patientData = "";
       // If there is enough space and equipment, print which region patient should be admitted to. 
       for (index in RPs){
@@ -577,7 +577,7 @@ pInput.addEventListener("submit", async (e) => {
 function GetIndex(name, array){
   for (index in array){
     if (name == array[index].Name)
-    return index
+    return index;
   }
 }
 
