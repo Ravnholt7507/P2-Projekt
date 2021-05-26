@@ -1,6 +1,6 @@
 let regions = require('./branch.js');
 let fs = require('fs');
-let HL = require('./SolverFlag')
+let HL = require('./SolverFlag');
 
 let PH_array = [];
 
@@ -79,16 +79,18 @@ function findPatientIndex(ID, New_Patient_List){
 function Admit(patientObj, New_Patient_List){
   let patientGrade = patientObj.grading;
   let patientRegion = patientObj.region;
+  let ReplacedPatient = false;
 
   let NewRegion = travel_Hospital(patientRegion, patientGrade)
   patientObj.region = NewRegion;
   // If patient can be replaced with other patient -> find other patient's index.
 
-  let ReplacedPatient = TryReplace(patientRegion, patientGrade, New_Patient_List);
+  if (patientObj.grading != 0)
+    ReplacedPatient = TryReplace(patientRegion, patientGrade, New_Patient_List);
   //Should return patient object, så sætter jeg ReplaceInHospital til dens region property, 
   //Sætter bageefter ellers mangler koden bare at blive kommenteret 
   if(ReplacedPatient != false){
-    
+
     patientObj.region = ReplacedPatient.region;
     HospitalTracker(patientObj.region, patientGrade, 0)
     New_Patient_List.push(patientObj);
@@ -102,7 +104,7 @@ function Admit(patientObj, New_Patient_List){
     return New_Patient_List;
   }
   PH_array.push(patientObj);
-  HospitalTracker(patientObj.region, patientGrade, 0)
+  HospitalTracker(patientObj.region, patientGrade, 0);
   New_Patient_List.push(patientObj);
   return New_Patient_List;
 }
@@ -113,14 +115,14 @@ function Admit(patientObj, New_Patient_List){
 function TryReplace(FromRegion, patient_grade, New_Patient_List) {
   let shortest_route = 500;
   let PatientObj = false;
-  let ReplacedPatient = 0;
+  let ReplacePatient = {name: "", grading: 0, region: 0, flag: 0, PID: 0}
   for (index in TravelTimeList){
     TravelTime = TravelTimeList[index];
     if ((TravelTime.from_region == FromRegion) && (TravelTime.min<shortest_route)){
       if (crowdedness(HL.HospitalList[TravelTime.To_region].Beds) == 0){
-        ReplacedPatient = LowestGradePatient(TravelTime.To_region, New_Patient_List);
-        if (patient_grade > ReplacedPatient.grading){
-          PatientObj = ReplacedPatient;
+        ReplacePatient = LowestGradePatient(TravelTime.To_region, New_Patient_List);
+        if (patient_grade > ReplacePatient.grading) {
+          PatientObj = ReplacePatient;
         }
       }
     }
@@ -129,7 +131,7 @@ return PatientObj;
 }
 //Returns lowest grade of patient in a region 
 function LowestGradePatient(Region, New_Patient_List){
-  let ReplacedPatient;
+  let ReplacedPatient = false;
   let placeholder_grading = 5;
   for(index in New_Patient_List){
     if (New_Patient_List[index].grading <= placeholder_grading && New_Patient_List[index].region == Region){
@@ -156,7 +158,7 @@ function HospitalTracker(region, PatientGrade, remove){
     if (PatientGrade == 3)
       HL.HospitalList[region].eqp += 1;
   }
-  fs.writeFile('HospitalList.json', JSON.stringify(HospitalList), (err) => {
+  fs.writeFile('HospitalList.json', JSON.stringify(HL.HospitalList), (err) => {
     if (err)
       throw err;
   });
@@ -185,45 +187,3 @@ crowdedness,
 PH_array,
 Delete_PH_array,
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// let PatientList = [];
-// PatientList[0] = {Name: "Jeff", grading: 2, region: 4}
-// PatientList[1] = {Name: "Kebab", grading: 2, region: 4},
-// PatientList[2] = {Name: "Smurf", grading: 2, region: 4}
-// PatientList[3] = {Name: "Egon", grading: 2, region: 4}
-// PatientList[4] = {Name: "Andre", grading: 2, region: 3}
-// PatientList[5] = {Name: "Jeppe", grading: 3, region: 1}
-// PatientList[6] = {Name: "Rune", grading: 3, region: 4}
-// PatientList[7] = {Name: "Elle", grading: 3, region: 2}
-// PatientList[8] = {Name: "Andrea", grading: 1, region: 2}
-// PatientList[9] = {Name: "Ramond", grading: 1, region: 0}
-// PatientList[10] = {Name: "Dunnis", grading: 1, region: 0}
-// PatientList[11] = {Name: "Jsde", grading: 2, region: 1}
-
-  //   for (index in New_Patient_List){
-  //       // convert JSON object to string
-  //       const data = JSON.stringify(New_Patient_List[index]); 
-  //      // write JSON string to a file
-  //      fs.appendFile('user.json', data + "\n", (err) => {
-  //        if (err) {
-  //            throw err;
-  //        }
-  //        console.log("JSON data is saved.");
-  //    });
-  //  }
