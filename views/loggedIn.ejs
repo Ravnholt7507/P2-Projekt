@@ -171,7 +171,7 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
         <div id="unadmit">
           <form>
             <label for="search">Search</label>
-            <input type="text" id="Search" list="patients">
+            <input type="text" id="Search" list="patients" size="40">
             <button type="submit">Unadmit</button>
           </form>
         </div><br>
@@ -318,11 +318,11 @@ async function getPatientlist() {
   patientslist = document.createElement('datalist');
   patientslist.id = 'patients';
   // Create an option in the datalist for each patient. The value of the option contains the info about the patient
-  // The ID of the option corresponds to the patients' index in the patient array
+  // The ID of the option corresponds to the patients' ID
   for (index in jsonData) {
     var option = document.createElement('option');
     option.value = jsonData[index].Name + ' grade: ' + jsonData[index].grading + ' region: ' + jsonData[index].region + ' ID: ' + jsonData[index].PID;
-    option.id = index;
+    option.id = jsonData[index].PID;
     patientslist.appendChild(option);
   }
   unadmit.appendChild(patientslist);
@@ -419,18 +419,18 @@ async function updateStats() {
       headers: {"content-type": "application/json"},
       body: JSON.stringify()
   };
-  const response = await fetch("/node0/stats", options);
+  const response = await fetch("/stats", options);
   const jsonData = await response.json();
   statistics.innerHTML = '<table><tr><th>Region</th><th>Beds</th><th>Admitted</th><th>Equipment</th></tr><tr><th>1</th><th>' + jsonData.region1.Beds + '</th><th>' + jsonData.region1.Admitted + '</th><th>' + jsonData.region1.Equipment + '</th></tr><tr><th>2</th><th>' + jsonData.region2.Beds + '</th><th>' + jsonData.region2.Admitted + '</th><th>' + jsonData.region2.Equipment + '</th></tr><tr><th>3</th><th>' + jsonData.region3.Beds + '</th><th>' + jsonData.region3.Admitted + '</th><th>' + jsonData.region3.Equipment + '</th></tr><tr><th>4</th><th>' + jsonData.region4.Beds + '</th><th>' + jsonData.region4.Admitted + '</th><th>' + jsonData.region4.Equipment + '</th></tr><tr><th>5</th><th>' + jsonData.region5.Beds + '</th><th>' + jsonData.region5.Admitted + '</th><th>' + jsonData.region5.Equipment + '</th></tr></table>';
   let YBeds = [jsonData.region1.Beds, jsonData.region2.Beds, jsonData.region3.Beds, jsonData.region4.Beds, jsonData.region5.Beds]; 
   let YAdmitted = [jsonData.region1.Admitted, jsonData.region2.Admitted, jsonData.region3.Admitted, jsonData.region4.Admitted, jsonData.region5.Admitted];
   let Yeqp = [jsonData.region1.Equipment, jsonData.region2.Equipment, jsonData.region3.Equipment, jsonData.region4.Equipment, jsonData.region5.Equipment];
-//  DataObj = {Xvalues, Yvalues};
+//  DataObj = {Xvalues, Yvalues}
   DataObj.Ydata.Beds = YBeds;
   DataObj.Ydata.Admitted = YAdmitted;
   DataObj.Ydata.eqp = Yeqp;
-//  console.log(DataObj.Ydata);
-addData(myChart, DataObj.Ydata);
+//  console.log(DataObj.Ydata)
+addData(myChart, DataObj.Ydata)
 }
 function addData(myChart, Ydata) {
   for(index in Ydata.Beds){
@@ -480,7 +480,7 @@ async function solverChecker() {
       headers: {"content-type": "application/json"},
       body: JSON.stringify(data)
   };
-  const response = await fetch("/node0/solver", options);
+  const response = await fetch("/solver", options);
   const jsonData = await response.json();
   console.log(jsonData);
   // Show which solver is being used on the page
@@ -496,7 +496,7 @@ async function solverChange() {
       headers: {"content-type": "application/json"},
       body: JSON.stringify(solver)
   };
-  const response = await fetch("/node0/solver", options);
+  const response = await fetch("/solver", options);
   const jsonData = await response.json();
   // Change which solver is being used on the page
   document.getElementById("solver").innerHTML = "Currently in use: Solver " + jsonData.solver;
