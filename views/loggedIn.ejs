@@ -48,7 +48,7 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
         
         <!-- Form for submitting patients. Includes field for Patient name, drop down selection menu for grade, 
         and search with autocomplete for patient city. Will only be visible when user navigates to the subpage "admit patients" -->
-        <form class="Patientinput" action="/" id="pInput" type="hidden" method="POST">
+        <form class="Patientinput" action="/" id="pInput" type="hidden">
           <label for="fname">Patient name:</label><br>
           <input type="text" id="pname" name="name" value="" required><br>
           <label for="Grading">Grading:</label><br>
@@ -166,7 +166,8 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
         <br>
 
         <!-- Form for searching for patients with the intent to unadmit them. This form will only appear 
-        when the user navigates to the unadmit subpage. -->
+        when the user navigates to the unadmit subpage. Using JavaScript code, a request is sent to the server which reponds with
+        a complete list of all admitted patients, which gets put into a datalist that the user will be able to search and select from. -->
         <div id="unadmit">
           <form>
             <label for="search">Search</label>
@@ -185,11 +186,12 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
         <div id="otherPatients">
 
         </div>
-
         <br>
-        <!-- Section where user can see which solver is currently in use, while having the ability to switch between them. -->
+        
+        <!-- Section where user can see which solver is currently in use, while having the ability to switch between them. 
+        Only visible on the admit patients subpage. -->
         <div id="solve">
-          <p>Select which type of solver the system is using. Using solver 2 means patients can be moved more than once per week. If solver 1 is used, patients can only be moved between hospitals once a week.</p>
+          <p>Select which type of solver the system is using. Using solver 2 means patients can be moved more than once. If solver 1 is used, patients can only be moved between hospitals once.</p>
           <p><b id="solver"> </b></p> <a href="#" onclick="solverChange()">Change</a>
         </div>
 
@@ -199,7 +201,8 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
         </div>
         <br>
 
-        <!-- Section where a visual diagram about the statistics will appear. -->
+        <!-- Section where a visual diagram about the statistics will appear. 
+        Only visible on the statistics subpage -->
         <div id="canvasElement">
         </div>
 
@@ -227,19 +230,25 @@ function w3_close() {
 }
 
 // Getting the different sections in the page, such that whether they are visible or not can be controlled using JS
+// Get form for admitting patients
 let pInput = document.getElementById("pInput");
 pInput.style.display = "none";
+// Get section about which solver is being used
 let solve = document.getElementById("solve");
 solve.style.display = "none";
+// Get field for statistics
 let statistics = document.getElementById("statistics");
 statistics.style.display = "none";
+// Get Section where the result of admitting patients will appear
 let submitResults = document.getElementById("submitResult");
 let otherPatients = document.getElementById("otherPatients");
+otherPatients.style.display = "none";
+// Get form for unadmitting patients
 let unadmit = document.getElementById("unadmit");
 unadmit.style.display = "none";
+// Get field where the canvas will appear
 let canvasElement = document.getElementById("canvasElement");
 canvasElement.style.display = "none";
-otherPatients.style.display = "none"
 
 
 // Function that controls what is visible when user navigates to front page
@@ -252,7 +261,7 @@ function frontpage() {
   canvasElement.style.display = "none"; 
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
-  otherPatients.style.display = "none"
+  otherPatients.style.display = "none";
 }
 
 // Function that controls what is visible when user navigates to admit patients subpage
@@ -266,6 +275,7 @@ function Admit_Patient() {
   otherPatients.style.display = "block";
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
+  // Call the function solverChecker to receive data from the server about which solver is used
   solverChecker();
 }
 
@@ -280,11 +290,14 @@ function Unadmit_Patient() {
   otherPatients.style.display = "none"
   submitResults.innerHTML = "";
   unadmit.style.display = "block";
+  // Check if a datalist of all patients has been created already
+  // If it the case, the list gets deleted, as it is likely outdated
   try {
     document.getElementById('patients').remove();
   } catch {
     console.log("Its fine");
   }
+  // Get new updated patientslist from server
   getPatientlist();
 }
 
@@ -295,12 +308,17 @@ async function getPatientlist() {
       headers: {"content-type": "application/json"},
       body: JSON.stringify()
   };
-  const response = await fetch("/node0/patients", options);
+  // Save server respons
+  const response = await fetch("/patients", options);
+  // Get list of patients in JSON format
   const jsonData = await response.json();
   console.log(jsonData); //test
   console.log(jsonData.length); //test
+  // Create a new datalist
   patientslist = document.createElement('datalist');
   patientslist.id = 'patients';
+  // Create an option in the datalist for each patient. The value of the option contains the info about the patient
+  // The ID of the option corresponds to the patients' index in the patient array
   for (index in jsonData) {
     var option = document.createElement('option');
     option.value = jsonData[index].Name + ' grade: ' + jsonData[index].grading + ' region: ' + jsonData[index].region + ' ID: ' + jsonData[index].PID;
@@ -310,26 +328,32 @@ async function getPatientlist() {
   unadmit.appendChild(patientslist);
 }
 
-// Function that finds the patient from the list to be unsubmitted. Send data to server for unsubmission. 
+// Function that gets called once the user taps the unadmit botton. 
+// It finds the patient from the list to be unsubmitted. Send data to server for unsubmission. 
 unadmit.addEventListener("submit", async (e) => {
   e.preventDefault();
+  // Get user input
   let patient = document.getElementById("Search");
+  // Search for an option with same value, to check if the patient actually exists.
   let doesPatientExist = document.querySelector('option[value="' + patient.value + '"]');
   if (doesPatientExist == null) {
     alert("Please select a patient from the list");
     return;
   }
+  // Get the ID of the option
   let unsubmitData = {index: doesPatientExist.id}
   const options = {
-      method: 'POST',
-      headers: {"content-type": "application/json"},
-      body: JSON.stringify(unsubmitData)
+    method: 'POST',
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(unsubmitData)
   };
-  const response = await fetch("/node0/unadmit", options);
+  // Send data to server
+  const response = await fetch("/unadmit", options);
   const jsonData = await response.json();
   submitResults.innerHTML = jsonData;
+  // Reset Input field
   patient.value = "";
-  // get new updated patient list
+  // Remove outdated patientlist and get new updated patientlist
   document.getElementById("patients").remove(); 
   getPatientlist(); 
 });
@@ -339,7 +363,7 @@ let canvas = document.createElement("CANVAS");
   canvas.id = 'myChart';
   canvas.width = '100';
   canvas.height = '100';
-  canvasElement.append(canvas)
+  canvasElement.append(canvas);
   
   DataObj = {Xdata: "", Ydata: {Beds: [2,2,2,2,2], Admitted: [0,0,0,0,0], eqp: [3,3,3,3,3]}}
   let Xvalues = ['Region Nordjylland', 'Region Midtjylland', 'Region Syddanmark', 'Region Sjælland', 'Region Hovedstad']
@@ -383,7 +407,8 @@ function Status_Regions() {
   canvasElement.style.display = "block";
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
-  otherPatients.style.display = "none"
+  otherPatients.style.display = "none";
+  // Function that gets updated statistics from the server
   updateStats();
 }
 
@@ -397,21 +422,21 @@ async function updateStats() {
   const response = await fetch("/node0/stats", options);
   const jsonData = await response.json();
   statistics.innerHTML = '<table><tr><th>Region</th><th>Beds</th><th>Admitted</th><th>Equipment</th></tr><tr><th>1</th><th>' + jsonData.region1.Beds + '</th><th>' + jsonData.region1.Admitted + '</th><th>' + jsonData.region1.Equipment + '</th></tr><tr><th>2</th><th>' + jsonData.region2.Beds + '</th><th>' + jsonData.region2.Admitted + '</th><th>' + jsonData.region2.Equipment + '</th></tr><tr><th>3</th><th>' + jsonData.region3.Beds + '</th><th>' + jsonData.region3.Admitted + '</th><th>' + jsonData.region3.Equipment + '</th></tr><tr><th>4</th><th>' + jsonData.region4.Beds + '</th><th>' + jsonData.region4.Admitted + '</th><th>' + jsonData.region4.Equipment + '</th></tr><tr><th>5</th><th>' + jsonData.region5.Beds + '</th><th>' + jsonData.region5.Admitted + '</th><th>' + jsonData.region5.Equipment + '</th></tr></table>';
-  let YBeds = [jsonData.region1.Beds, jsonData.region2.Beds, jsonData.region3.Beds, jsonData.region4.Beds, jsonData.region5.Beds] 
-  let YAdmitted = [jsonData.region1.Admitted, jsonData.region2.Admitted, jsonData.region3.Admitted, jsonData.region5.Admitted]
-  let Yeqp = [jsonData.region1.Equipment, jsonData.region2.Equipment, jsonData.region3.Equipment, jsonData.region4.Equipment, jsonData.region5.Equipment]
-//  DataObj = {Xvalues, Yvalues}
+  let YBeds = [jsonData.region1.Beds, jsonData.region2.Beds, jsonData.region3.Beds, jsonData.region4.Beds, jsonData.region5.Beds]; 
+  let YAdmitted = [jsonData.region1.Admitted, jsonData.region2.Admitted, jsonData.region3.Admitted, jsonData.region4.Admitted, jsonData.region5.Admitted];
+  let Yeqp = [jsonData.region1.Equipment, jsonData.region2.Equipment, jsonData.region3.Equipment, jsonData.region4.Equipment, jsonData.region5.Equipment];
+//  DataObj = {Xvalues, Yvalues};
   DataObj.Ydata.Beds = YBeds;
   DataObj.Ydata.Admitted = YAdmitted;
   DataObj.Ydata.eqp = Yeqp;
-//  console.log(DataObj.Ydata)
-addData(myChart, DataObj.Ydata)
+//  console.log(DataObj.Ydata);
+addData(myChart, DataObj.Ydata);
 }
 function addData(myChart, Ydata) {
   for(index in Ydata.Beds){
-    myChart.data.datasets[0].data[index] = Ydata.Beds[index]
-    myChart.data.datasets[1].data[index] = Ydata.Admitted[index]
-    myChart.data.datasets[2].data[index] = Ydata.eqp[index]
+    myChart.data.datasets[0].data[index] = Ydata.Beds[index];
+    myChart.data.datasets[1].data[index] = Ydata.Admitted[index];
+    myChart.data.datasets[2].data[index] = Ydata.eqp[index];
   }
   myChart.update(0);
 }
@@ -428,7 +453,7 @@ function Instructions() {
   solve.style.display = "none";
   statistics.style.display = "none";
   canvasElement.style.display = "none"; 
-  otherPatients.style.display = "none"
+  otherPatients.style.display = "none";
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
 }
@@ -441,14 +466,15 @@ function Contact() {
   solve.style.display = "none";
   statistics.style.display = "none";
   canvasElement.style.display = "none"; 
-  otherPatients.style.display = "none"
+  otherPatients.style.display = "none";
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
 }
 
 // Function that gets data from server about which solver is currently is use.
 async function solverChecker() {
-  const data = {change: "false"}
+// Send request to server without the intent to change the solver
+  const data = {change: "false"};
   const options = {
       method: 'POST',
       headers: {"content-type": "application/json"},
@@ -457,11 +483,13 @@ async function solverChecker() {
   const response = await fetch("/node0/solver", options);
   const jsonData = await response.json();
   console.log(jsonData);
+  // Show which solver is being used on the page
   document.getElementById("solver").innerHTML = "Currently in use: Solver " + jsonData.solver;
 }
 
 // Function that sends request to server for changing which solver that is being used.
 async function solverChange() {
+// Send request to server with the intent of changing the solver in use
   const solver = {change: "change"};
   const options = {
       method: 'POST',
@@ -470,6 +498,7 @@ async function solverChange() {
   };
   const response = await fetch("/node0/solver", options);
   const jsonData = await response.json();
+  // Change which solver is being used on the page
   document.getElementById("solver").innerHTML = "Currently in use: Solver " + jsonData.solver;
 }
 
@@ -485,29 +514,32 @@ pInput.addEventListener("submit", async (e) => {
     alert("Please enter the patient's name");
     return;
   }
-  // Validation of grading input
+  // Validation of grading input - must be either 0, 1, 2 or 3.
   if (Grading.value != 0 && Grading.value != 1 && Grading.value != 2 && Grading.value != 3) {
     alert("Please select an illness grade");
     return;
   }
-  // Validatation of city input
+  // Validatation of city input - The city must be selected from the datalist
   // If all inputs are of correct type, data will be submitted and the form is cleared
   let cities = document.getElementById("cities");
+  // Search through the datalist to check if the inputted city exists.
   for (index in cities.options) {
     if (City.value === cities.options[index].value) {
       console.log("Name: "+ Name.value +", Grading: " + Grading.value + ", City: " + City.value);
       let iname = Name.value; let igrade = Grading.value; let icity = City.value;
+      // If all user input pass validation, send data to server for admission. 
       const patientObj = {iname, igrade, icity};
       const options = {
         method: 'POST',
         headers: {"content-type": "application/json"},
         body: JSON.stringify(patientObj)
       };
-      const response = await fetch("/node0/api", options);
+      // Print appropiate respons from server
+      const response = await fetch("/api", options);
       let RPs = await response.json();
-      console.log(RPs)
+      console.log(RPs);
       if (RPs == "no Space"){ 
-      alert('No more space available')
+      alert('No more space available');
       Name.value = "";
       Grading.value = "-";
       City.value = "";
@@ -521,13 +553,15 @@ pInput.addEventListener("submit", async (e) => {
       return;
       }
       else {
-      let NewPatient = GetIndex(iname, RPs)
+      let NewPatient = GetIndex(iname, RPs);
       let patientData = "";
+      // If there is enough space and equipment, print which region patient should be admitted to. 
       for (index in RPs){
         if (index != NewPatient)
           patientData += "Patient " + RPs[index].Name + " with ID " + RPs[index].PID + " is to be moved to region " + SelectRegion(RPs[index].region) + " ";
       }
       submitResults.innerHTML = "<b>Result: </b>Patient " + RPs[NewPatient].Name + " is to be submitted to region " + SelectRegion(RPs[NewPatient].region) + " With ID " + RPs[NewPatient].PID;
+      // If a lower grade patients needs to be moved, this will be shown on site as well. 
       if (patientData != undefined)
         otherPatients.innerHTML = patientData;
       } 
@@ -543,10 +577,11 @@ pInput.addEventListener("submit", async (e) => {
 function GetIndex(name, array){
   for (index in array){
     if (name == array[index].Name)
-    return index
+    return index;
   }
 }
 
+// Function for converting the regions to their respective names
 function SelectRegion(RegionNumber){
   let RegionName = "";
   switch(RegionNumber) {
@@ -554,8 +589,8 @@ function SelectRegion(RegionNumber){
     case 1: RegionName = 'MidtJylland'; break;
     case 2: RegionName = 'Syddanmark'; break;
     case 3: RegionName = 'Sjælland'; break;
-    case 4: RegionName = 'Hovedstaden'
-  default: RegionName = 'Kunne ikke finde region'
+    case 4: RegionName = 'Hovedstaden'; break;
+  default: RegionName = 'Kunne ikke finde region';
   }
   return RegionName;
 }

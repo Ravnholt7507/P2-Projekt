@@ -149,18 +149,16 @@ span.psw {
       <h1 class="w3-text-teal" id="h1">Hospital Management</h1>
       <p id = "sub_text"> Manage Patients.</p>
     </div>
-    <div class="w3-third w3-container">
-      <p class="w3-border w3-padding-large w3-padding-32 w3-center">No ads to look at here.</p>
-      <p class="w3-border w3-padding-large w3-padding-64 w3-center">No ads to look at here.</p>
-    </div>
   </div>
 <!-- END MAIN -->
 </div>
 
 <!-- Section for the login form -->
 <div id="id01" class="modal">
-  
-  <form class="modal-content animate" name="loginForm" action="/main" onSubmit="return validateForm();"> <!--action="./loggedIn.html"  method="post" -->
+
+  <!-- Upon clicking the login botton, the function validateForm will be called to check username and password
+  If both are correct, user will be redirected to the /main subpage where the main functionality is. -->
+  <form class="modal-content animate" name="loginForm" action="/main" onSubmit="return validateForm();"> 
     <div class="imgcontainer">
       <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
       <img src="#" alt="Avatar" class="avatar" style="width:150px;height:150px;">
@@ -237,10 +235,12 @@ function ForgotPassword() {
 // Taken from https://stackoverflow.com/questions/23134756/simple-javascript-login-form-validation#23135360
 // Function that validates that the username and password is correct. 
 function validateForm() {
+        // Get user input
         var un = document.loginForm.uname.value;
         var pw = document.loginForm.psw.value;
         var username = "username"; 
         var password = "password";
+        // Check if user input is correct
         if ((un == username) && (pw == password)) {
             return true;
         }
