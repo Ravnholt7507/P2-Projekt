@@ -564,6 +564,10 @@ invInput.addEventListener("submit", async (e) =>{
     alert("Please enter a number");
     return;
   }
+  if (amount <= 0){
+    alert("Please enter a positive number");
+    return;
+  }
   //Put Inventory changing data on the server
   const options = {
     method: 'PUT',
