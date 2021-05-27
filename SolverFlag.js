@@ -43,25 +43,21 @@ function Admit(patientObj, New_Patient_List){
   let patientGrade = patientObj.grading;
   let patientRegion = patientObj.region;
   let ReplacedPatient = false;
-
 //Get shortest route to free hospital available (Can also be the origin regions hospital)
-  let NewRegion = travel_Hospital(patientRegion, patientGrade)
+  let NewRegion = travel_Hospital(patientRegion, patientGrade);
   patientObj.region = NewRegion;
-
 //If patient grade is not 0
 //See if patient can be replaced with other patient
   if (patientObj.grading != 0)
     ReplacedPatient = TryReplace(patientRegion, patientGrade, New_Patient_List);
 //If replacable patient is found ->
   if(ReplacedPatient != false){
-
 //Change patients region to that of the replacable patient
 //and push him into list 
     patientObj.region = ReplacedPatient.region;
-    HospitalTracker(patientObj.region, patientGrade, 0)
+    HospitalTracker(patientObj.region, patientGrade, 0);
     New_Patient_List.push(patientObj);
     PH_array.push(patientObj);
-
 //Find index of the replaced patient. Re-admit him and splice him from this position
     let patientIndex = findPatientIndex(ReplacedPatient.PID, New_Patient_List);
     New_Patient_List[patientIndex].flag = 1;
@@ -101,9 +97,9 @@ function eqp(equip, PatientGrade){
 //Uses the TravelTimeList array to do so. If Patient grade is 0, return origin region.
 function travel_Hospital(OriginRegion, patient_grade){
   let shortest_route = 500;
-  let Prefered_hospital = OriginRegion;
+  let Prefered_hospital = 0;
   for (index in TravelTimeList){
-    TravelTime = TravelTimeList[index]
+    TravelTime = TravelTimeList[index];
     if ((TravelTime.from_region == OriginRegion) && (TravelTime.min<shortest_route) && (patient_grade != 0)){
       if (crowdedness(HospitalList[TravelTime.To_region].Beds) == 1 && eqp(HospitalList[TravelTime.To_region].eqp, patient_grade) == 1){
         shortest_route = TravelTime.min;
@@ -112,8 +108,8 @@ function travel_Hospital(OriginRegion, patient_grade){
     }
   }
     if (patient_grade == 0)
-       Prefered_hospital = OriginRegion
-    return Prefered_hospital
+       Prefered_hospital = OriginRegion;
+    return Prefered_hospital;
 }
 
 //Get patient index in the list, based on region and grading. 
@@ -144,6 +140,7 @@ function TryReplace(FromRegion, patient_grade, New_Patient_List) {
     }
   return PatientObj;
 }
+
 
 //Returns lowest grade patient in a region  
 function LowestGradePatient(Region, New_Patient_List){
@@ -186,18 +183,17 @@ function HospitalTracker(region, PatientGrade, remove){
 }
 
 // Runs through all new patients which needs to be admitted (this is the function we call initially)
+// If we have a batch of patients, they can all be read from here
 function BatchPatients(PatientList, New_Patient_List){
   New_Patient_List = Admit(PatientList, New_Patient_List);
   return New_Patient_List;
  }
 
-//Is called from the server. PH_array includes all patients who has been readmitted
+//Is called from thes server. PH_array includes all patients who has been readmitted
 // after a patient has been submitted. It is sent as a response to the user. 
 function Delete_PH_array(){
   PH_array.splice(0, PH_array.length)
 }
-
-
 
 //Export necessary functions
 module.exports = {
@@ -213,57 +209,3 @@ HospitalList,
 PH_array,
 Delete_PH_array,
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//Remember to deadline below code before deadline
-
-
-// let PatientList = [];
-// PatientList[0] = {Name: "Jeff", grading: 2, region: 4}
-// PatientList[1] = {Name: "Kebab", grading: 2, region: 4},
-// PatientList[2] = {Name: "Smurf", grading: 2, region: 4}
-// PatientList[3] = {Name: "Egon", grading: 2, region: 4}
-// PatientList[4] = {Name: "Andre", grading: 2, region: 3}
-// PatientList[5] = {Name: "Jeppe", grading: 3, region: 1}
-// PatientList[6] = {Name: "Rune", grading: 3, region: 4}
-// PatientList[7] = {Name: "Elle", grading: 3, region: 2}
-// PatientList[8] = {Name: "Andrea", grading: 1, region: 2}
-// PatientList[9] = {Name: "Ramond", grading: 1, region: 0}
-// PatientList[10] = {Name: "Dunnis", grading: 1, region: 0}
-// PatientList[11] = {Name: "Jsde", grading: 2, region: 1}
-
-  //   for (index in New_Patient_List){
-  //       // convert JSON object to string
-  //       const data = JSON.stringify(New_Patient_List[index]); 
-  //      // write JSON string to a file
-  //      fs.appendFile('user.json', data + "\n", (err) => {
-  //        if (err) {
-  //            throw err;
-  //        }
-  //        console.log("JSON data is saved.");
-  //    });
-  //  }
-
-
-
-    // let maxBeds = parseFloat(totalBeds);
-  // let StandardMax = 0.50*maxBeds;
-  // console.log(StandardMax)
-  //   if (beds > StandardMax)
-  //     return 1;
-  //   else if (beds < StandardMax)
-  //     return 2;
-  //   else if (beds == 0 || beds < 0)
-  //     return 0;
