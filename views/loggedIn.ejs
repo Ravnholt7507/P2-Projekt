@@ -3,6 +3,7 @@
 <title>Pandemic program</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Chart module taken from https://www.chartjs.org/ -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1/dist/chart.min.js"> </script>
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
@@ -391,8 +392,8 @@ unadmit.addEventListener("submit", async (e) => {
 // Code for creating the graph for the statistics
 let canvas = document.createElement("CANVAS");
   canvas.id = 'myChart';
-  canvas.width = '100';
-  canvas.height = '100';
+  canvasElement.width = '50';
+  canvasElement.height = '50';
   canvasElement.append(canvas);
   
 //Canvas datasets are given statistic objects as their content
