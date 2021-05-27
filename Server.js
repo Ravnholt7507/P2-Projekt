@@ -268,10 +268,11 @@ app.get('/patients', (req, res) => {
 
 // Functionality for when clients requests to unsubmit a patient
 app.post('/unadmit', (request, response) => {
-    console.log(List[request.body.index]);
-    response.json('Succesfully unadmitted '+ List[request.body.index].Name);
-    SolverFlag.HospitalTracker(List[request.body.index].region, List[request.body.index].grading, 1)
-    List.splice(request.body.index, 1); // remove patient from list
+    console.log(request.body.index);
+    var index = findPatientIndex(request.body.index);
+    SolverFlag.HospitalTracker(List[index].region, List[index].grading, 1)
+    response.json('Succesfully unadmitted '+ List[index].Name);
+    List.splice(index, 1); // remove patient from list
     let JsonList = JSON.stringify(List);
     fs.writeFileSync('PatientList.json', JsonList, (err) => {
       if (err)
@@ -379,6 +380,14 @@ function gradingValidation(grading) {
   return (grading == 0 || grading == 1 || grading == 2 || grading == 3);
 }
 
+function findPatientIndex(value) {
+    for (index in List) {
+        if (List[index].PID == value) {
+            return index;
+        }
+    }
+}
+
 app.listen(port);
 
 
@@ -401,5 +410,3 @@ app.listen(port);
 
 // setInterval(unadmitPatient, 10000, List); 
 // setInterval( () => console.log(List), 10000); // Test
-
-
