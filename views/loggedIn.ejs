@@ -29,6 +29,7 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
   <a class="w3-bar-item w3-button w3-hover-black" href="#" onclick="Admit_Patient()">Admit Patients</a>
   <a class="w3-bar-item w3-button w3-hover-black" href="#" onclick="Unadmit_Patient()">Unadmit Patients</a>
   <a class="w3-bar-item w3-button w3-hover-black" href="#" onclick="Status_Regions()">Status of Regions</a>
+  <a class="w3-bar-item w3-button w3-hover-black" href="#" onclick="Exchange_Equipment()">Exchange Equipment</a>
   <a class="w3-bar-item w3-button w3-hover-black" href="#" onclick="Instructions()">Instructions</a>
   <a class="w3-bar-item w3-button w3-hover-black" href="#" onclick="Contact()">Contact</a>
 </nav>
@@ -163,7 +164,30 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
           </datalist><br><br>
           <input type="submit" value="Admit">
         </form>
-        <br>
+        <form class="inventory" action="/" id="invInput" type="hidden">
+            <label for="Wherefrom">Select Origin region:</label><br>
+            <select id="Wherefrom" name="Wherefrom" required>
+              <option value="-">-</option>
+              <option value=0>NordJylland</option>
+              <option value=1>MidtJylland</option>
+              <option value=2>SydDanmark</option>
+              <option value=3>Sjælland</option>
+              <option value=4>Hovedstaden</option>
+            </select><br>
+            <label for="Whereto"> Select Destination region:</label><br>
+            <select id="Whereto" name="Whereto" required>
+              <option value="-">-</option>
+              <option value=0>NordJylland</option>
+              <option value=1>MidtJylland</option>
+              <option value=2>SydDanmark</option>
+              <option value=3>Sjælland</option>
+              <option value=4>Hovedstaden</option>
+            </select><br>
+            <label for="amount">Select amount:</label><br>
+            <input type="text" id="amount" name="amount" value="" required><br><br>
+            <input type="submit" value="Send eqp">
+          </form>
+            <br>    
 
         <!-- Form for searching for patients with the intent to unadmit them. This form will only appear 
         when the user navigates to the unadmit subpage. Using JavaScript code, a request is sent to the server which reponds with
@@ -236,6 +260,9 @@ pInput.style.display = "none";
 // Get section about which solver is being used
 let solve = document.getElementById("solve");
 solve.style.display = "none";
+// Get form for changing equipment
+let invInput = document.getElementById("invInput");
+invInput.style.display = "none"
 // Get field for statistics
 let statistics = document.getElementById("statistics");
 statistics.style.display = "none";
@@ -262,6 +289,7 @@ function frontpage() {
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
   otherPatients.style.display = "none";
+  invInput.style.display = "none"
 }
 
 // Function that controls what is visible when user navigates to admit patients subpage
@@ -275,6 +303,7 @@ function Admit_Patient() {
   otherPatients.style.display = "block";
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
+  invInput.style.display = "none"
   // Call the function solverChecker to receive data from the server about which solver is used
   solverChecker();
 }
@@ -290,6 +319,7 @@ function Unadmit_Patient() {
   otherPatients.style.display = "none"
   submitResults.innerHTML = "";
   unadmit.style.display = "block";
+  invInput.style.display = "none"
   // Check if a datalist of all patients has been created already
   // If it the case, the list gets deleted, as it is likely outdated
   try {
@@ -365,6 +395,7 @@ let canvas = document.createElement("CANVAS");
   canvas.height = '100';
   canvasElement.append(canvas);
   
+//Canvas datasets are given statistic objects as their content
   DataObj = {Xdata: "", Ydata: {Beds: [2,2,2,2,2], Admitted: [0,0,0,0,0], eqp: [3,3,3,3,3]}}
   let Xvalues = ['Region Nordjylland', 'Region Midtjylland', 'Region Syddanmark', 'Region Sjælland', 'Region Hovedstad']
   DataObj.Xdata = Xvalues;
@@ -377,21 +408,18 @@ let canvas = document.createElement("CANVAS");
             label: '# beds available in each region',
             data: DataObj.Ydata.Beds,
             backgroundColor: [ 'rgba(255, 99, 132, 0.5)' ],
-//            borderColor: [ 'rgba(255, 99, 132, 1)'],
             borderWidth: 1
         },
         {
             label: '# admitted in each region',
             data: DataObj.Ydata.Admitted,
             backgroundColor: [ 'rgba(127, 255, 212, 0.5)' ],
-//            borderColor: [ 'rgba(255, 99, 132, 1)'],
             borderWidth: 1
         },
         {
             label: '# of equipment left in each region',
             data: DataObj.Ydata.eqp,
             backgroundColor: [ 'rgba(100,149,237 0.5)' ],
-//            borderColor: [ 'rgba(255, 99, 132, 1)'],
             borderWidth: 1
         }]
     },
@@ -408,6 +436,7 @@ function Status_Regions() {
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
   otherPatients.style.display = "none";
+  invInput.style.display = "none"
   // Function that gets updated statistics from the server
   updateStats();
 }
@@ -425,13 +454,13 @@ async function updateStats() {
   let YBeds = [jsonData.region1.Beds, jsonData.region2.Beds, jsonData.region3.Beds, jsonData.region4.Beds, jsonData.region5.Beds]; 
   let YAdmitted = [jsonData.region1.Admitted, jsonData.region2.Admitted, jsonData.region3.Admitted, jsonData.region4.Admitted, jsonData.region5.Admitted];
   let Yeqp = [jsonData.region1.Equipment, jsonData.region2.Equipment, jsonData.region3.Equipment, jsonData.region4.Equipment, jsonData.region5.Equipment];
-//  DataObj = {Xvalues, Yvalues}
+  //Modifying the elements in the canvas objects
   DataObj.Ydata.Beds = YBeds;
   DataObj.Ydata.Admitted = YAdmitted;
   DataObj.Ydata.eqp = Yeqp;
-//  console.log(DataObj.Ydata)
 addData(myChart, DataObj.Ydata)
 }
+//Reset Canvas with newest values
 function addData(myChart, Ydata) {
   for(index in Ydata.Beds){
     myChart.data.datasets[0].data[index] = Ydata.Beds[index];
@@ -440,9 +469,18 @@ function addData(myChart, Ydata) {
   }
   myChart.update(0);
 }
-function removeData(myChart, Ydata) {
-    myChart.data.datasets[0].data = [];
-  myChart.update(0);
+
+function Exchange_Equipment(){
+  document.getElementById("h1").innerHTML = "Exchange Equipment";
+  document.getElementById("sub_text").innerHTML = "Please fill out form below to exchange equipment : ";
+  pInput.style.display = "none";
+  invInput.style.display = "block"
+  solve.style.display = "none";
+  statistics.style.display = "none";
+  canvasElement.style.display = "none"; 
+  otherPatients.style.display = "none";
+  submitResults.innerHTML = "";
+  unadmit.style.display = "none";
 }
 
 // Function that controls what is visible when user navigates to instructions subpage
@@ -456,6 +494,7 @@ function Instructions() {
   otherPatients.style.display = "none";
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
+  invInput.style.display = "none"
 }
 
 // Function that controls what is visible when user navigates to contact subpage
@@ -469,6 +508,7 @@ function Contact() {
   otherPatients.style.display = "none";
   submitResults.innerHTML = "";
   unadmit.style.display = "none";
+  invInput.style.display = "none"
 }
 
 // Function that gets data from server about which solver is currently is use.
@@ -501,6 +541,52 @@ async function solverChange() {
   // Change which solver is being used on the page
   document.getElementById("solver").innerHTML = "Currently in use: Solver " + jsonData.solver;
 }
+
+//PUT (change) new data in the existing HospitalList on the server returns a text response to user
+invInput.addEventListener("submit", async (e) =>{
+  e.preventDefault();
+  // get inventory data
+  let wherefrom = document.getElementById("Wherefrom").value;
+  let whereto = document.getElementById("Whereto").value;
+  let amount = document.getElementById("amount").value;
+  const Inventorydata = {From: wherefrom, To: whereto, Amount: amount};
+  //Validate form data in the three if's
+  if (wherefrom != 0 && wherefrom != 1 && wherefrom != 2 && wherefrom != 3 && wherefrom != 4) {
+    alert("Please select a proper origin region");
+    return;
+  }  
+  if (whereto != 0 && whereto != 1 && whereto != 2 && whereto != 3 && whereto != 4) {
+    alert("Please select a proper destination region");
+    return;
+  }
+  if (isNaN(amount) == true) {
+    alert("Please enter a number");
+    return;
+  }
+  //Put Inventory changing data on the server
+  const options = {
+    method: 'PUT',
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(Inventorydata)
+  };
+  //Response gets the server-response
+  const response = await fetch("/Inventory", options);
+  let ClientAnswer = await response.json();
+  //If the requested input is too large
+  if (ClientAnswer == "no"){
+    alert("Not enough equipment in that region");
+    document.getElementById("Wherefrom").value = "-";
+    document.getElementById("Whereto").value = "-";
+    document.getElementById("amount").value = "";
+    return;
+  }
+  //Otherwise
+  submitResults.innerHTML = ClientAnswer;
+  document.getElementById("Wherefrom").value = "-";
+  document.getElementById("Whereto").value = "-";
+  document.getElementById("amount").value = "";
+  return;
+})
 
 // Function that sends data to the server for submitting a patient. Includes client side validation of data types. 
 pInput.addEventListener("submit", async (e) => {
@@ -538,24 +624,35 @@ pInput.addEventListener("submit", async (e) => {
       const response = await fetch("/api", options);
       let RPs = await response.json();
       console.log(RPs);
+      //If server gives response no more space left
       if (RPs == "no Space"){ 
-      alert('No more space available');
-      Name.value = "";
-      Grading.value = "-";
-      City.value = "";
-      return;
+        alert('No more space available');
+        Name.value = "";
+        Grading.value = "-";
+        City.value = "";
+        return;
       }
+      //If server gives response 'no more eqp left'
       if (RPs == "no Eqp"){
-      alert('No more equipment in region')
-      Name.value = "";
-      Grading.value = "-";
-      City.value = "";
-      return;
+        alert('No more equipment in region')
+        Name.value = "";
+        Grading.value = "-";
+        City.value = "";
+        return;
+      }
+      //If all regions lack either eqp or bedspace
+      if (RPs == "no Space or Eqp"){
+        alert("Space does not match any equipment in any hospital for a grade 3 patient, transport more equipment to a region with beds and try again");
+        Name.value = "";
+        Grading.value = "-";
+        City.value = "";
+        return;
       }
       else {
       let NewPatient = GetIndex(iname, RPs);
       let patientData = "";
-      // If there is enough space and equipment, print which region patient should be admitted to. 
+      // If there is enough space and equipment, print which regions patient should be admitted to. 
+      // RPs includes all the affected patients in an array 
       for (index in RPs){
         if (index != NewPatient)
           patientData += "Patient " + RPs[index].Name + " with ID " + RPs[index].PID + " is to be moved to region " + SelectRegion(RPs[index].region) + " ";
@@ -574,6 +671,7 @@ pInput.addEventListener("submit", async (e) => {
   alert("Please select a valid city");  
 });
 
+//Get specific index of array
 function GetIndex(name, array){
   for (index in array){
     if (name == array[index].Name)
